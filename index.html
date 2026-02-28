@@ -200,25 +200,27 @@ body {
 .water-all-btn {
   width: 100%;
   padding: 12px;
-  background: #2D9F7C;
-  color: #FFFFFF;
-  border: none;
+  background: transparent;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
   border-radius: var(--radius-sm);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
+  transition: background 0.18s ease, color 0.18s ease;
   margin-bottom: 10px;
 }
 
 .water-all-btn:hover {
-  background: #1E6B53;
+  background: var(--accent);
+  color: #FFFFFF;
 }
 
 .water-all-btn:active {
   transform: scale(0.98);
-  background: #1A5C47;
+  background: var(--accent-hover);
+  color: #FFFFFF;
 }
 
 /* Compact plant row */
@@ -1401,7 +1403,7 @@ function renderPlantRow(plant) {
           </div>
           <span class="plant-row-sub" style="color:${colors.text};">${helperText}</span>
         </div>
-        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water plant" aria-label="Water ${escapeHtml(plant.name)}">&#128166;</button>
+        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water plant" aria-label="Water ${escapeHtml(plant.name)}">💧</button>
       </div>
       <div class="plant-detail${isExpanded ? ' expanded' : ''}" id="detail-${plant.id}">
         <div class="detail-row">
@@ -1439,7 +1441,7 @@ function render() {
   }
   app.innerHTML = `
     <div class="plant-list">
-      <button class="water-all-btn" onclick="confirmWaterAll()">Water All</button>
+      <button class="water-all-btn" onclick="confirmWaterAll()">💦 Water All</button>
       ${plants.map(renderPlantRow).join('')}
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
       <div style="text-align:center; margin-top:24px;">
