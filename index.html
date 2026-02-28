@@ -36,9 +36,9 @@
   --accent-hover: #248A6B;
   --accent-light: #E8F5F0;
   --green: #2D9F7C;
-  --yellow: #E8A317;
-  --red: #E04848;
-  --gray-status: #B0B0B0;
+  --yellow: #F5A623;
+  --red: #E74C3C;
+  --gray-status: #CCCCCC;
   --shadow: 0 2px 8px rgba(0,0,0,0.08);
   --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
   --radius: 14px;
@@ -141,44 +141,54 @@ body {
   margin-bottom: 24px;
 }
 
-/* Skeleton loader */
-.skeleton-card {
+/* Skeleton loader — compact rows */
+.skeleton-row {
   background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px;
-  margin-bottom: 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.skeleton-row:first-child {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.skeleton-row:last-child {
+  border-radius: 0 0 var(--radius) var(--radius);
+  border-bottom: none;
 }
 
 .skeleton-line {
   background: var(--gray-100);
-  border-radius: 8px;
+  border-radius: 6px;
   animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 .skeleton-line.icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  margin-bottom: 16px;
 }
 
 .skeleton-line.title {
-  width: 60%;
-  height: 20px;
-  margin-bottom: 12px;
+  width: 35%;
+  height: 14px;
 }
 
-.skeleton-line.subtitle {
-  width: 40%;
+.skeleton-line.badge {
+  width: 50px;
   height: 14px;
-  margin-bottom: 20px;
+  margin-left: auto;
 }
 
 .skeleton-line.button {
-  width: 100%;
-  height: 44px;
-  border-radius: var(--radius-sm);
+  width: 44px;
+  height: 32px;
+  border-radius: 8px;
 }
 
 @keyframes pulse {
@@ -186,61 +196,98 @@ body {
   50% { opacity: 0.4; }
 }
 
-/* Plant cards */
+/* Water All button */
+.water-all-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--white);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.water-all-btn:hover {
+  background: var(--accent);
+  color: var(--white);
+}
+
+.water-all-btn:active {
+  transform: scale(0.98);
+}
+
+/* Plant list container */
 .plant-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.plant-card {
+.plant-list-card {
   background: var(--white);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 24px;
-  position: relative;
-  transition: box-shadow 0.2s;
+  overflow: hidden;
 }
 
-.plant-card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-.plant-card-header {
+/* Compact plant row */
+.plant-row {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  min-height: 52px;
+  cursor: pointer;
+  border-left: 4px solid var(--gray-status);
+  transition: background 0.15s;
+  border-bottom: 1px solid var(--gray-100);
+  user-select: none;
 }
 
-.plant-emoji {
-  font-size: 40px;
+.plant-row:last-child,
+.plant-row.expanded {
+  border-bottom: none;
+}
+
+.plant-row:hover {
+  background: var(--gray-bg);
+}
+
+.plant-row.border-green { border-left-color: var(--green); }
+.plant-row.border-yellow { border-left-color: var(--yellow); }
+.plant-row.border-red { border-left-color: var(--red); }
+.plant-row.border-gray { border-left-color: var(--gray-status); }
+
+.plant-row .row-emoji {
+  font-size: 24px;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
   flex-shrink: 0;
 }
 
-.plant-info {
-  flex: 1;
+.plant-row .row-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   min-width: 0;
 }
 
-.plant-name {
-  font-size: 18px;
+.plant-row .row-badge {
+  font-size: 10px;
   font-weight: 600;
-  color: var(--gray-600);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.env-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
+  padding: 2px 7px;
   border-radius: var(--radius-pill);
   background: var(--accent-light);
   color: var(--accent);
@@ -249,75 +296,78 @@ body {
   flex-shrink: 0;
 }
 
-.plant-delete {
-  background: none;
-  border: none;
-  color: var(--gray-300);
-  cursor: pointer;
-  padding: 4px;
-  font-size: 18px;
-  line-height: 1;
-  border-radius: 8px;
-  transition: color 0.2s, background 0.2s;
-  flex-shrink: 0;
-}
-
-.plant-delete:hover {
-  color: var(--red);
-  background: #FEF2F2;
-}
-
-/* Status area */
-.status-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  background: var(--gray-bg);
-  border-radius: var(--radius-sm);
-}
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.status-dot.green { background: var(--green); }
-.status-dot.yellow { background: var(--yellow); }
-.status-dot.red { background: var(--red); }
-.status-dot.gray { background: var(--gray-status); }
-
-.days-display {
-  flex: 1;
-}
-
-.days-count {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gray-600);
-  line-height: 1.2;
-}
-
-.days-label {
+.plant-row .row-days {
   font-size: 13px;
   color: var(--gray-400);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
-/* Recommendation */
-.recommendation {
+.plant-row .row-water-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 36px;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.plant-row .row-water-btn:hover {
+  background: var(--accent-hover);
+}
+
+.plant-row .row-water-btn:active {
+  transform: scale(0.93);
+}
+
+/* Expanded detail panel */
+.plant-detail {
+  display: none;
+  padding: 16px 16px 16px 20px;
+  background: var(--gray-bg);
+  border-bottom: 1px solid var(--gray-100);
+  animation: expandIn 0.2s ease-out;
+}
+
+.plant-detail.visible {
+  display: block;
+}
+
+@keyframes expandIn {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 300px; }
+}
+
+.detail-status {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.detail-status.green { color: var(--green); }
+.detail-status.yellow { color: var(--yellow); }
+.detail-status.red { color: var(--red); }
+.detail-status.gray { color: var(--gray-400); }
+
+.detail-recommendation {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
   font-size: 13px;
   color: var(--gray-400);
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
-.recommendation .edit-btn {
+.detail-recommendation .edit-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -328,11 +378,11 @@ body {
   transition: color 0.2s;
 }
 
-.recommendation .edit-btn:hover {
+.detail-recommendation .edit-btn:hover {
   color: var(--accent);
 }
 
-.recommendation .reset-link {
+.detail-recommendation .reset-link {
   color: var(--accent);
   cursor: pointer;
   font-size: 12px;
@@ -342,7 +392,7 @@ body {
   padding: 0;
 }
 
-.recommendation .reset-link:hover {
+.detail-recommendation .reset-link:hover {
   color: var(--accent-hover);
 }
 
@@ -351,7 +401,7 @@ body {
   display: none;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-size: 13px;
   color: var(--gray-400);
 }
@@ -371,6 +421,7 @@ body {
   text-align: center;
   outline: none;
   transition: border-color 0.2s;
+  background: var(--white);
 }
 
 .interval-editor input:focus {
@@ -403,30 +454,28 @@ body {
 }
 
 .interval-editor .cancel-btn:hover {
-  background: var(--gray-bg);
+  background: var(--white);
 }
 
-/* Water button */
-.water-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--accent);
-  color: var(--white);
+.detail-delete {
+  background: none;
   border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font);
-  font-size: 15px;
-  font-weight: 600;
+  color: var(--gray-400);
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.water-btn:hover {
-  background: var(--accent-hover);
-}
-
-.water-btn:active {
-  transform: scale(0.98);
+.detail-delete:hover {
+  color: var(--red);
+  background: #FEF2F2;
 }
 
 /* Add plant button */
@@ -725,12 +774,20 @@ body {
   background: var(--gray-100);
 }
 
-.confirm-delete {
-  background: var(--red);
+.confirm-confirm {
+  background: var(--accent);
   color: var(--white);
 }
 
-.confirm-delete:hover {
+.confirm-confirm:hover {
+  background: var(--accent-hover);
+}
+
+.confirm-confirm.danger {
+  background: var(--red);
+}
+
+.confirm-confirm.danger:hover {
   background: #c93d3d;
 }
 
@@ -738,9 +795,6 @@ body {
 @media (max-width: 640px) {
   .container {
     padding: 16px 12px;
-  }
-  .plant-card {
-    padding: 20px;
   }
 }
 </style>
@@ -786,14 +840,14 @@ body {
   </div>
 </div>
 
-<!-- Confirm Delete Dialog -->
+<!-- Confirm Dialog (reused for delete + water all) -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
-    <h3>Remove plant?</h3>
-    <p id="confirmText">This will permanently remove this plant.</p>
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmText"></p>
     <div class="confirm-actions">
       <button class="confirm-cancel" id="confirmCancel">Cancel</button>
-      <button class="confirm-delete" id="confirmDelete">Remove</button>
+      <button class="confirm-confirm" id="confirmAction">Confirm</button>
     </div>
   </div>
 </div>
@@ -879,9 +933,12 @@ const PLANT_DATABASE = [
 let uid = null;
 let plants = [];
 let isLoading = true;
-let deleteTargetId = null;
 let selectedEnv = 'indoor';
 let highlightedIndex = -1;
+let expandedPlantId = null;
+
+// Confirm dialog state
+let confirmCallback = null;
 
 // ============================================================
 // UID Management
@@ -985,10 +1042,28 @@ async function waterPlant(plantId) {
   }
 }
 
+async function waterAllPlants() {
+  const now = new Date();
+  const ts = firebase.firestore.Timestamp.fromDate(now);
+  const batch = db.batch();
+  plants.forEach(p => {
+    batch.update(plantsRef().doc(p.id), { lastWatered: ts });
+  });
+  try {
+    await batch.commit();
+    plants.forEach(p => { p.lastWatered = ts; });
+    render();
+  } catch (err) {
+    console.error('Failed to water all plants:', err);
+    showError();
+  }
+}
+
 async function deletePlant(plantId) {
   try {
     await plantsRef().doc(plantId).delete();
     plants = plants.filter(p => p.id !== plantId);
+    if (expandedPlantId === plantId) expandedPlantId = null;
     render();
   } catch (err) {
     console.error('Failed to delete plant:', err);
@@ -1049,6 +1124,13 @@ function getStatus(plant) {
   return 'red';
 }
 
+function getStatusLabel(status) {
+  if (status === 'green') return 'On schedule';
+  if (status === 'yellow') return 'Due soon';
+  if (status === 'red') return 'Overdue';
+  return 'Never watered';
+}
+
 // ============================================================
 // Error Banner
 // ============================================================
@@ -1061,19 +1143,52 @@ function hideError() {
 }
 
 // ============================================================
+// Confirm Dialog
+// ============================================================
+const confirmOverlay = document.getElementById('confirmOverlay');
+
+function showConfirm({ title, text, actionLabel, danger, onConfirm }) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmText').textContent = text;
+  const actionBtn = document.getElementById('confirmAction');
+  actionBtn.textContent = actionLabel;
+  actionBtn.className = 'confirm-confirm' + (danger ? ' danger' : '');
+  confirmCallback = onConfirm;
+  confirmOverlay.classList.add('visible');
+}
+
+function hideConfirm() {
+  confirmOverlay.classList.remove('visible');
+  confirmCallback = null;
+}
+
+document.getElementById('confirmCancel').addEventListener('click', hideConfirm);
+
+document.getElementById('confirmAction').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  hideConfirm();
+});
+
+confirmOverlay.addEventListener('click', (e) => {
+  if (e.target === confirmOverlay) hideConfirm();
+});
+
+// ============================================================
 // Rendering
 // ============================================================
 function renderSkeleton() {
   return `
     <div class="plant-list">
-      ${[1, 2, 3].map(() => `
-        <div class="skeleton-card">
-          <div class="skeleton-line icon"></div>
-          <div class="skeleton-line title"></div>
-          <div class="skeleton-line subtitle"></div>
-          <div class="skeleton-line button"></div>
-        </div>
-      `).join('')}
+      <div class="plant-list-card">
+        ${[1, 2, 3, 4, 5].map(() => `
+          <div class="skeleton-row">
+            <div class="skeleton-line icon"></div>
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line badge"></div>
+            <div class="skeleton-line button"></div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
@@ -1089,75 +1204,66 @@ function renderEmptyState() {
   `;
 }
 
-function renderPlantCard(plant) {
+function getDaysText(days) {
+  if (days === null) return 'Never';
+  if (days === 0) return 'Today';
+  if (days === 1) return '1 day ago';
+  return days + 'd ago';
+}
+
+function renderPlantRow(plant) {
   const days = getDaysSinceWatered(plant);
   const status = getStatus(plant);
-  const [lower] = getInterval(plant);
   const emoji = getEmoji(plant.name);
+  const isExpanded = expandedPlantId === plant.id;
+  const [lower] = getInterval(plant);
   const isCustom = plant.customInterval != null;
 
-  let daysText, daysLabel;
-  if (days === null) {
-    daysText = '—';
-    daysLabel = 'Never watered';
-  } else if (days === 0) {
-    daysText = '0';
-    daysLabel = 'Watered today';
-  } else if (days === 1) {
-    daysText = '1';
-    daysLabel = 'day ago';
-  } else {
-    daysText = String(days);
-    daysLabel = 'days ago';
-  }
+  let detailHtml = '';
+  if (isExpanded) {
+    let recHtml;
+    if (isCustom) {
+      recHtml = `
+        <div class="detail-recommendation" id="rec-${plant.id}">
+          <span>Custom: every ${plant.customInterval} day${plant.customInterval !== 1 ? 's' : ''}</span>
+          <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+          <button class="reset-link" onclick="event.stopPropagation(); resetInterval('${plant.id}')">Reset to default</button>
+        </div>
+      `;
+    } else {
+      recHtml = `
+        <div class="detail-recommendation" id="rec-${plant.id}">
+          <span>Water again in ~${lower} day${lower !== 1 ? 's' : ''}</span>
+          <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+        </div>
+      `;
+    }
 
-  let recommendationHtml;
-  if (isCustom) {
-    recommendationHtml = `
-      <div class="recommendation" id="rec-${plant.id}">
-        <span>Custom: every ${plant.customInterval} day${plant.customInterval !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
-        <button class="reset-link" onclick="resetInterval('${plant.id}')">Reset to default</button>
-      </div>
-    `;
-  } else {
-    recommendationHtml = `
-      <div class="recommendation" id="rec-${plant.id}">
-        <span>Water again in ~${lower} day${lower !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+    detailHtml = `
+      <div class="plant-detail visible" id="detail-${plant.id}">
+        <div class="detail-status ${status}">${getStatusLabel(status)}</div>
+        ${recHtml}
+        <div class="interval-editor" id="editor-${plant.id}">
+          <span>Every</span>
+          <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}" onclick="event.stopPropagation()">
+          <span>days</span>
+          <button class="save-btn" onclick="event.stopPropagation(); saveInterval('${plant.id}')">Save</button>
+          <button class="cancel-btn" onclick="event.stopPropagation(); closeIntervalEditor('${plant.id}')">Cancel</button>
+        </div>
+        <button class="detail-delete" onclick="event.stopPropagation(); confirmDelete('${plant.id}', '${escapeAttr(plant.name)}')">&#128465; Remove plant</button>
       </div>
     `;
   }
 
   return `
-    <div class="plant-card" id="card-${plant.id}">
-      <div class="plant-card-header">
-        <div class="plant-emoji">${emoji}</div>
-        <div class="plant-info">
-          <div class="plant-name">
-            ${escapeHtml(plant.name)}
-            <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
-          </div>
-        </div>
-        <button class="plant-delete" onclick="confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">&times;</button>
-      </div>
-      <div class="status-area">
-        <div class="status-dot ${status}"></div>
-        <div class="days-display">
-          <div class="days-count">${daysText}</div>
-          <div class="days-label">${daysLabel}</div>
-        </div>
-      </div>
-      ${recommendationHtml}
-      <div class="interval-editor" id="editor-${plant.id}">
-        <span>Every</span>
-        <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}">
-        <span>days</span>
-        <button class="save-btn" onclick="saveInterval('${plant.id}')">Save</button>
-        <button class="cancel-btn" onclick="closeIntervalEditor('${plant.id}')">Cancel</button>
-      </div>
-      <button class="water-btn" onclick="waterPlant('${plant.id}')">&#128167; Water Now</button>
+    <div class="plant-row border-${status}${isExpanded ? ' expanded' : ''}" onclick="toggleExpand('${plant.id}')" id="row-${plant.id}">
+      <span class="row-emoji">${emoji}</span>
+      <span class="row-name">${escapeHtml(plant.name)}</span>
+      <span class="row-badge">${plant.environment === 'indoor' ? 'In' : 'Out'}</span>
+      <span class="row-days">${getDaysText(days)}</span>
+      <button class="row-water-btn" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water now">&#128167;</button>
     </div>
+    ${detailHtml}
   `;
 }
 
@@ -1172,11 +1278,35 @@ function render() {
     return;
   }
   app.innerHTML = `
+    <button class="water-all-btn" onclick="confirmWaterAll()">&#128167; Water All (${plants.length})</button>
     <div class="plant-list">
-      ${plants.map(renderPlantCard).join('')}
+      <div class="plant-list-card">
+        ${plants.map(renderPlantRow).join('')}
+      </div>
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
     </div>
   `;
+}
+
+// ============================================================
+// Expand / Collapse
+// ============================================================
+function toggleExpand(plantId) {
+  expandedPlantId = expandedPlantId === plantId ? null : plantId;
+  render();
+}
+
+// ============================================================
+// Water All
+// ============================================================
+function confirmWaterAll() {
+  showConfirm({
+    title: 'Water all plants?',
+    text: `This will mark all ${plants.length} plant${plants.length !== 1 ? 's' : ''} as watered right now.`,
+    actionLabel: 'Water All',
+    danger: false,
+    onConfirm: waterAllPlants
+  });
 }
 
 // ============================================================
@@ -1209,6 +1339,19 @@ function saveInterval(plantId) {
 
 function resetInterval(plantId) {
   updateCustomInterval(plantId, null);
+}
+
+// ============================================================
+// Delete
+// ============================================================
+function confirmDelete(plantId, plantName) {
+  showConfirm({
+    title: 'Remove plant?',
+    text: `This will permanently remove "${plantName}".`,
+    actionLabel: 'Remove',
+    danger: true,
+    onConfirm: () => deletePlant(plantId)
+  });
 }
 
 // ============================================================
@@ -1349,43 +1492,16 @@ async function submitPlant() {
 }
 
 // ============================================================
-// Delete Confirmation
-// ============================================================
-const confirmOverlay = document.getElementById('confirmOverlay');
-
-function confirmDelete(plantId, plantName) {
-  deleteTargetId = plantId;
-  document.getElementById('confirmText').textContent = `This will permanently remove "${plantName}".`;
-  confirmOverlay.classList.add('visible');
-}
-
-document.getElementById('confirmCancel').addEventListener('click', () => {
-  deleteTargetId = null;
-  confirmOverlay.classList.remove('visible');
-});
-
-document.getElementById('confirmDelete').addEventListener('click', async () => {
-  if (deleteTargetId) {
-    await deletePlant(deleteTargetId);
-    deleteTargetId = null;
-    confirmOverlay.classList.remove('visible');
-  }
-});
-
-confirmOverlay.addEventListener('click', (e) => {
-  if (e.target === confirmOverlay) {
-    deleteTargetId = null;
-    confirmOverlay.classList.remove('visible');
-  }
-});
-
-// ============================================================
 // Utility
 // ============================================================
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function escapeAttr(text) {
+  return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
 // ============================================================
