@@ -200,7 +200,7 @@ body {
 .water-all-btn {
   width: 100%;
   padding: 12px;
-  background: #247F63;
+  background: #2D9F7C;
   color: #FFFFFF;
   border: none;
   border-radius: var(--radius-sm);
@@ -1439,7 +1439,7 @@ function render() {
   }
   app.innerHTML = `
     <div class="plant-list">
-      <button class="water-all-btn" onclick="confirmWaterAll()">&#128166; Water All</button>
+      <button class="water-all-btn" onclick="confirmWaterAll()">Water All</button>
       ${plants.map(renderPlantRow).join('')}
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
       <div style="text-align:center; margin-top:24px;">
