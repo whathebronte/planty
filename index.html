@@ -315,28 +315,29 @@ body {
 }
 
 .plant-row-water {
-  min-width: 44px;
-  min-height: 44px;
-  background: none;
+  width: 44px;
+  height: 44px;
+  background: var(--accent-light);
   border: none;
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.15s, opacity 0.15s;
+  transition: transform 0.12s, background 0.12s;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  padding: 4px;
+  padding: 0;
 }
 
 .plant-row-water:hover {
-  opacity: 0.75;
+  background: #d0eae0;
 }
 
 .plant-row-water:active {
-  transform: scale(0.88);
+  transform: scale(0.85);
+  background: #b8ddd0;
 }
 
 /* Expanded detail */
