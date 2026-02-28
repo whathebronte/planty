@@ -942,9 +942,27 @@ function setUidInUrl(newUid) {
 function initUid() {
   uid = getUidFromUrl();
   if (!uid) {
-    uid = crypto.randomUUID();
+    // No UID in URL — check localStorage for a returning visitor
+    const stored = localStorage.getItem('plantTracker_uid');
+    if (stored) {
+      uid = stored;
+    } else {
+      uid = crypto.randomUUID();
+    }
     setUidInUrl(uid);
   }
+  // Always save the current UID (handles new, stored, or direct-link visits)
+  localStorage.setItem('plantTracker_uid', uid);
+}
+
+function startFresh() {
+  localStorage.removeItem('plantTracker_uid');
+  uid = crypto.randomUUID();
+  setUidInUrl(uid);
+  localStorage.setItem('plantTracker_uid', uid);
+  plants = [];
+  expandedPlantId = null;
+  loadPlants();
 }
 
 // ============================================================
@@ -1154,6 +1172,9 @@ function renderEmptyState() {
       <h2>No plants yet</h2>
       <p>Add your first plant and start tracking your watering schedule!</p>
       <button class="submit-btn" style="max-width: 240px; margin: 0 auto;" onclick="openAddModal()">Add Your First Plant</button>
+      <div style="margin-top:24px;">
+        <a href="#" onclick="event.preventDefault(); startFresh();" style="color:var(--gray-300); font-size:13px; text-decoration:none;">Not your list? Start fresh</a>
+      </div>
     </div>
   `;
 }
@@ -1245,6 +1266,9 @@ function render() {
       <button class="water-all-btn" onclick="confirmWaterAll()">&#128167; Water All</button>
       ${plants.map(renderPlantRow).join('')}
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
+      <div style="text-align:center; margin-top:24px;">
+        <a href="#" onclick="event.preventDefault(); startFresh();" style="color:var(--gray-300); font-size:13px; text-decoration:none;">Start fresh</a>
+      </div>
     </div>
   `;
 }
