@@ -6,7 +6,7 @@ Single-page plant watering tracker app built with vanilla HTML/CSS/JS and Fireba
 ## Architecture
 - **Single file**: All CSS, HTML, and JS are inline in `index.html`
 - **Backend**: Firebase Firestore (client SDK, compat mode v10.12.2)
-- **Auth**: UID-based via URL query param (`?id=<uuid>`), auto-generated if missing
+- **Auth**: UID-based via URL query param (`?id=<uuid>`), auto-generated if missing. UID is persisted in `localStorage` (`plantTracker_uid`) so returning visitors on the same browser are automatically redirected to their existing data. Visiting a different UID URL updates the stored value. A "Start fresh" link clears `localStorage` and generates a new UID.
 - **Data model**: `users/{uid}/plants/{plantId}` with fields: `name`, `environment`, `lastWatered`, `customInterval`, `createdAt`
 - **Plant database**: 50 hardcoded plants in `PLANT_DATABASE` array with default watering intervals for indoor/outdoor
 
