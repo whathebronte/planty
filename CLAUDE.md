@@ -28,6 +28,7 @@ Single-page plant watering tracker app built with vanilla HTML/CSS/JS and Fireba
 - CSS custom properties in `:root` for theming
 - Mobile-first, max-width 600px container
 - No external CSS framework
+- `<meta name="viewport" content="width=device-width, initial-scale=1.0">` is present in `<head>` — ensures correct 1:1 scale on mobile, no horizontal scroll
 
 ## Development
 - No build step — just open `index.html` in a browser
