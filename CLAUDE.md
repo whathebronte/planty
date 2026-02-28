@@ -20,7 +20,9 @@ Single-page plant watering tracker app built with vanilla HTML/CSS/JS and Fireba
 ## UI Layout
 - Compact list view with expandable detail rows (accordion pattern, one open at a time)
 - "Water All" bulk action button at top of plant list
-- Status communicated via left border color (green/yellow/red/gray)
+- Status communicated via left border color, subtitle text under the plant name, and a pill badge; no status dot
+- Five urgency states: `fresh` (0–50%), `close` (50–80%), `due` (80–100%), `overdue` (>100%), `never` — percentage based on `daysSinceWatered / effectiveInterval * 100`
+- Color palette defined in `STATUS_COLORS` JS object; inline styles applied per row on render
 - Water button on each row works without expanding
 - Add plant modal with autocomplete from `PLANT_DATABASE`
 - Undo toast appears at bottom of screen after watering (single or all), auto-dismisses after 5 seconds with countdown bar
