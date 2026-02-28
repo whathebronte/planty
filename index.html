@@ -193,7 +193,7 @@ body {
 .plant-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* Water All button */
@@ -236,20 +236,22 @@ body {
 .plant-row-summary {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 14px 16px;
   cursor: pointer;
   border-left: 4px solid var(--gray-status);
-  min-height: 52px;
+  min-height: 64px;
   user-select: none;
   -webkit-user-select: none;
   transition: border-color 0.3s ease;
 }
 
 .plant-row-emoji {
-  font-size: 24px;
+  font-size: 28px;
   line-height: 1;
   flex-shrink: 0;
+  width: 36px;
+  text-align: center;
 }
 
 .plant-row-info {
@@ -257,7 +259,14 @@ body {
   flex-direction: column;
   min-width: 0;
   flex: 1;
-  gap: 2px;
+  gap: 3px;
+}
+
+.plant-row-name-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .plant-row-name {
@@ -267,11 +276,12 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .plant-row-sub {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 400;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -297,7 +307,7 @@ body {
   align-items: center;
   font-size: 11px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
   flex-shrink: 0;
@@ -305,26 +315,29 @@ body {
 }
 
 .plant-row-water {
-  padding: 6px 14px;
-  background: var(--accent);
-  color: var(--white);
+  width: 44px;
+  height: 44px;
+  background: var(--accent-light);
   border: none;
-  border-radius: var(--radius-pill);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: transform 0.12s, background 0.12s;
   flex-shrink: 0;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
 }
 
 .plant-row-water:hover {
-  background: var(--accent-hover);
+  background: #d0eae0;
 }
 
 .plant-row-water:active {
-  transform: scale(0.95);
+  transform: scale(0.85);
+  background: #b8ddd0;
 }
 
 /* Expanded detail */
@@ -1015,7 +1028,7 @@ const PLANT_DATABASE = [
 // ============================================================
 const STATUS_COLORS = {
   fresh:   { border: '#2D9F7C', text: '#2D9F7C', badgeBg: '#F0FAF6', label: 'Fresh' },
-  close:   { border: '#D4A13C', text: '#B89030', badgeBg: '#FBF5E6', label: 'Due soon' },
+  close:   { border: '#D4A13C', text: '#B89030', badgeBg: '#FBF5E6', label: 'Getting close' },
   due:     { border: '#D4764A', text: '#C06535', badgeBg: '#FAEEE5', label: 'Due today' },
   overdue: { border: '#CC5555', text: '#B54545', badgeBg: '#FBEAEA', label: 'Overdue' },
   never:   { border: '#D1D1D1', text: '#999999', badgeBg: '#F3F3F3', label: 'Never watered' },
@@ -1342,17 +1355,19 @@ function renderPlantRow(plant) {
   const isCustom = plant.customInterval != null;
   const isExpanded = expandedPlantId === plant.id;
 
-  // Badge label: for 'fresh' show specific days info, for others show status label
-  let badgeLabel;
-  if (status === 'fresh') {
-    if (days === 0) badgeLabel = 'Today';
-    else if (days === 1) badgeLabel = '1 day ago';
-    else badgeLabel = `${days} days ago`;
-  } else {
-    badgeLabel = colors.label;
-  }
-
   const statusLabel = colors.label;
+
+  // Helper text for second line of the row
+  let helperText;
+  if (days === null) {
+    helperText = 'Add your first watering';
+  } else if (days === 0) {
+    helperText = 'Watered today';
+  } else if (days === 1) {
+    helperText = 'Watered 1 day ago';
+  } else {
+    helperText = `Watered ${days} days ago`;
+  }
 
   let recommendationHtml;
   if (isCustom) {
@@ -1372,21 +1387,27 @@ function renderPlantRow(plant) {
     `;
   }
 
+  const envLabel = plant.environment === 'indoor' ? '\ud83c\udfe0 Indoor' : '\u2600\ufe0f Outdoor';
+
   return `
     <div class="plant-row" id="row-${plant.id}">
       <div class="plant-row-summary" style="border-left-color:${colors.border};" onclick="toggleExpand('${plant.id}')">
         <span class="plant-row-emoji">${emoji}</span>
         <div class="plant-row-info">
-          <span class="plant-row-name">${escapeHtml(plant.name)}</span>
-          <span class="plant-row-sub" style="color:${colors.text};">${statusLabel}</span>
+          <div class="plant-row-name-line">
+            <span class="plant-row-name">${escapeHtml(plant.name)}</span>
+            <span class="status-badge" style="background:${colors.badgeBg}; color:${colors.text};">${statusLabel}</span>
+          </div>
+          <span class="plant-row-sub" style="color:${colors.text};">${helperText}</span>
         </div>
-        <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
-        <span class="status-badge" style="background:${colors.badgeBg}; color:${colors.text};">${badgeLabel}</span>
-        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')">&#128167; Water</button>
+        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water plant" aria-label="Water ${escapeHtml(plant.name)}">&#128167;</button>
       </div>
       <div class="plant-detail${isExpanded ? ' expanded' : ''}" id="detail-${plant.id}">
         <div class="detail-row">
           <span class="detail-status-label" style="color:${colors.text};">${statusLabel}</span>
+        </div>
+        <div class="detail-row">
+          <span>${envLabel}</span>
         </div>
         <div class="detail-row">
           ${recommendationHtml}
