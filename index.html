@@ -142,12 +142,14 @@ body {
 }
 
 /* Skeleton loader */
-.skeleton-card {
+.skeleton-row {
   background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px;
-  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 4px solid var(--gray-100);
 }
 
 .skeleton-line {
@@ -157,28 +159,29 @@ body {
 }
 
 .skeleton-line.icon {
-  width: 48px;
-  height: 48px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .skeleton-line.title {
-  width: 60%;
-  height: 20px;
-  margin-bottom: 12px;
+  width: 40%;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .skeleton-line.subtitle {
-  width: 40%;
-  height: 14px;
-  margin-bottom: 20px;
+  width: 20%;
+  height: 12px;
+  margin-left: auto;
 }
 
 .skeleton-line.button {
-  width: 100%;
-  height: 44px;
-  border-radius: var(--radius-sm);
+  width: 70px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
 }
 
 @keyframes pulse {
@@ -186,61 +189,89 @@ body {
   50% { opacity: 0.4; }
 }
 
-/* Plant cards */
+/* Plant list */
 .plant-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 6px;
 }
 
-.plant-card {
+/* Water All button */
+.water-all-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-bottom: 10px;
+}
+
+.water-all-btn:hover {
+  background: var(--accent-hover);
+}
+
+.water-all-btn:active {
+  transform: scale(0.98);
+}
+
+/* Compact plant row */
+.plant-row {
   background: var(--white);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
-  padding: 24px;
-  position: relative;
+  overflow: hidden;
   transition: box-shadow 0.2s;
 }
 
-.plant-card:hover {
+.plant-row:hover {
   box-shadow: var(--shadow-lg);
 }
 
-.plant-card-header {
+.plant-row-summary {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-left: 4px solid var(--gray-status);
+  min-height: 52px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.plant-emoji {
-  font-size: 40px;
+.plant-row-summary.border-green { border-left-color: #2D9F7C; }
+.plant-row-summary.border-yellow { border-left-color: #F5A623; }
+.plant-row-summary.border-red { border-left-color: #E74C3C; }
+.plant-row-summary.border-gray { border-left-color: #CCCCCC; }
+
+.plant-row-emoji {
+  font-size: 24px;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
   flex-shrink: 0;
 }
 
-.plant-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.plant-name {
-  font-size: 18px;
+.plant-row-name {
+  font-size: 15px;
   font-weight: 600;
   color: var(--gray-600);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .env-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 2px 7px;
   border-radius: var(--radius-pill);
   background: var(--accent-light);
   color: var(--accent);
@@ -249,17 +280,94 @@ body {
   flex-shrink: 0;
 }
 
+.plant-row-days {
+  font-size: 13px;
+  color: var(--gray-400);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.plant-row-water {
+  padding: 6px 14px;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.plant-row-water:hover {
+  background: var(--accent-hover);
+}
+
+.plant-row-water:active {
+  transform: scale(0.95);
+}
+
+/* Expanded detail */
+.plant-detail {
+  display: none;
+  padding: 14px 16px 16px 20px;
+  background: var(--gray-bg);
+  border-top: 1px solid var(--gray-100);
+}
+
+.plant-detail.expanded {
+  display: block;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--gray-400);
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-status-label {
+  font-weight: 600;
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.detail-status-label.green { color: var(--green); }
+.detail-status-label.yellow { color: var(--yellow); }
+.detail-status-label.red { color: var(--red); }
+.detail-status-label.gray { color: var(--gray-status); }
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+}
+
 .plant-delete {
   background: none;
   border: none;
   color: var(--gray-300);
   cursor: pointer;
-  padding: 4px;
-  font-size: 18px;
-  line-height: 1;
-  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font);
+  border-radius: 6px;
   transition: color 0.2s, background 0.2s;
-  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .plant-delete:hover {
@@ -267,51 +375,11 @@ body {
   background: #FEF2F2;
 }
 
-/* Status area */
-.status-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  background: var(--gray-bg);
-  border-radius: var(--radius-sm);
-}
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.status-dot.green { background: var(--green); }
-.status-dot.yellow { background: var(--yellow); }
-.status-dot.red { background: var(--red); }
-.status-dot.gray { background: var(--gray-status); }
-
-.days-display {
-  flex: 1;
-}
-
-.days-count {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gray-600);
-  line-height: 1.2;
-}
-
-.days-label {
-  font-size: 13px;
-  color: var(--gray-400);
-}
-
 /* Recommendation */
 .recommendation {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
   font-size: 13px;
   color: var(--gray-400);
   flex-wrap: wrap;
@@ -351,7 +419,6 @@ body {
   display: none;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
   font-size: 13px;
   color: var(--gray-400);
 }
@@ -404,29 +471,6 @@ body {
 
 .interval-editor .cancel-btn:hover {
   background: var(--gray-bg);
-}
-
-/* Water button */
-.water-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--accent);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.water-btn:hover {
-  background: var(--accent-hover);
-}
-
-.water-btn:active {
-  transform: scale(0.98);
 }
 
 /* Add plant button */
@@ -739,9 +783,6 @@ body {
   .container {
     padding: 16px 12px;
   }
-  .plant-card {
-    padding: 20px;
-  }
 }
 </style>
 </head>
@@ -882,6 +923,7 @@ let isLoading = true;
 let deleteTargetId = null;
 let selectedEnv = 'indoor';
 let highlightedIndex = -1;
+let expandedPlantId = null;
 
 // ============================================================
 // UID Management
@@ -989,6 +1031,7 @@ async function deletePlant(plantId) {
   try {
     await plantsRef().doc(plantId).delete();
     plants = plants.filter(p => p.id !== plantId);
+    if (expandedPlantId === plantId) expandedPlantId = null;
     render();
   } catch (err) {
     console.error('Failed to delete plant:', err);
@@ -1007,6 +1050,23 @@ async function updateCustomInterval(plantId, interval) {
     }
   } catch (err) {
     console.error('Failed to update interval:', err);
+    showError();
+  }
+}
+
+async function waterAllPlants() {
+  const now = new Date();
+  const ts = firebase.firestore.Timestamp.fromDate(now);
+  try {
+    const batch = db.batch();
+    plants.forEach(p => {
+      batch.update(plantsRef().doc(p.id), { lastWatered: ts });
+    });
+    await batch.commit();
+    plants.forEach(p => { p.lastWatered = ts; });
+    render();
+  } catch (err) {
+    console.error('Failed to water all plants:', err);
     showError();
   }
 }
@@ -1049,6 +1109,15 @@ function getStatus(plant) {
   return 'red';
 }
 
+function getStatusText(status) {
+  switch (status) {
+    case 'green': return 'On schedule';
+    case 'yellow': return 'Due soon';
+    case 'red': return 'Overdue';
+    default: return 'Never watered';
+  }
+}
+
 // ============================================================
 // Error Banner
 // ============================================================
@@ -1066,8 +1135,8 @@ function hideError() {
 function renderSkeleton() {
   return `
     <div class="plant-list">
-      ${[1, 2, 3].map(() => `
-        <div class="skeleton-card">
+      ${[1, 2, 3, 4].map(() => `
+        <div class="skeleton-row">
           <div class="skeleton-line icon"></div>
           <div class="skeleton-line title"></div>
           <div class="skeleton-line subtitle"></div>
@@ -1089,74 +1158,74 @@ function renderEmptyState() {
   `;
 }
 
-function renderPlantCard(plant) {
+function renderPlantRow(plant) {
   const days = getDaysSinceWatered(plant);
   const status = getStatus(plant);
   const [lower] = getInterval(plant);
   const emoji = getEmoji(plant.name);
   const isCustom = plant.customInterval != null;
+  const isExpanded = expandedPlantId === plant.id;
 
-  let daysText, daysLabel;
+  let daysShort;
   if (days === null) {
-    daysText = '—';
-    daysLabel = 'Never watered';
+    daysShort = 'Never';
   } else if (days === 0) {
-    daysText = '0';
-    daysLabel = 'Watered today';
+    daysShort = 'Today';
   } else if (days === 1) {
-    daysText = '1';
-    daysLabel = 'day ago';
+    daysShort = '1 day ago';
   } else {
-    daysText = String(days);
-    daysLabel = 'days ago';
+    daysShort = `${days} days ago`;
   }
+
+  const statusText = getStatusText(status);
 
   let recommendationHtml;
   if (isCustom) {
     recommendationHtml = `
       <div class="recommendation" id="rec-${plant.id}">
         <span>Custom: every ${plant.customInterval} day${plant.customInterval !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
-        <button class="reset-link" onclick="resetInterval('${plant.id}')">Reset to default</button>
+        <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+        <button class="reset-link" onclick="event.stopPropagation(); resetInterval('${plant.id}')">Reset to default</button>
       </div>
     `;
   } else {
     recommendationHtml = `
       <div class="recommendation" id="rec-${plant.id}">
         <span>Water again in ~${lower} day${lower !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+        <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
       </div>
     `;
   }
 
   return `
-    <div class="plant-card" id="card-${plant.id}">
-      <div class="plant-card-header">
-        <div class="plant-emoji">${emoji}</div>
-        <div class="plant-info">
-          <div class="plant-name">
-            ${escapeHtml(plant.name)}
-            <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
+    <div class="plant-row" id="row-${plant.id}">
+      <div class="plant-row-summary border-${status}" onclick="toggleExpand('${plant.id}')">
+        <span class="plant-row-emoji">${emoji}</span>
+        <span class="plant-row-name">${escapeHtml(plant.name)}</span>
+        <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
+        <span class="plant-row-days">${daysShort}</span>
+        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')">&#128167; Water</button>
+      </div>
+      <div class="plant-detail${isExpanded ? ' expanded' : ''}" id="detail-${plant.id}">
+        <div class="detail-row">
+          <span class="detail-status-label ${status}">${statusText}</span>
+        </div>
+        <div class="detail-row">
+          ${recommendationHtml}
+        </div>
+        <div class="detail-row">
+          <div class="interval-editor" id="editor-${plant.id}">
+            <span>Every</span>
+            <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}" onclick="event.stopPropagation()">
+            <span>days</span>
+            <button class="save-btn" onclick="event.stopPropagation(); saveInterval('${plant.id}')">Save</button>
+            <button class="cancel-btn" onclick="event.stopPropagation(); closeIntervalEditor('${plant.id}')">Cancel</button>
           </div>
         </div>
-        <button class="plant-delete" onclick="confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">&times;</button>
-      </div>
-      <div class="status-area">
-        <div class="status-dot ${status}"></div>
-        <div class="days-display">
-          <div class="days-count">${daysText}</div>
-          <div class="days-label">${daysLabel}</div>
+        <div class="detail-actions">
+          <button class="plant-delete" onclick="event.stopPropagation(); confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">&#128465; Remove</button>
         </div>
       </div>
-      ${recommendationHtml}
-      <div class="interval-editor" id="editor-${plant.id}">
-        <span>Every</span>
-        <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}">
-        <span>days</span>
-        <button class="save-btn" onclick="saveInterval('${plant.id}')">Save</button>
-        <button class="cancel-btn" onclick="closeIntervalEditor('${plant.id}')">Cancel</button>
-      </div>
-      <button class="water-btn" onclick="waterPlant('${plant.id}')">&#128167; Water Now</button>
     </div>
   `;
 }
@@ -1173,10 +1242,57 @@ function render() {
   }
   app.innerHTML = `
     <div class="plant-list">
-      ${plants.map(renderPlantCard).join('')}
+      <button class="water-all-btn" onclick="confirmWaterAll()">&#128167; Water All</button>
+      ${plants.map(renderPlantRow).join('')}
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
     </div>
   `;
+}
+
+function toggleExpand(plantId) {
+  if (expandedPlantId === plantId) {
+    expandedPlantId = null;
+  } else {
+    // Collapse previous
+    if (expandedPlantId) {
+      const prevDetail = document.getElementById('detail-' + expandedPlantId);
+      if (prevDetail) prevDetail.classList.remove('expanded');
+    }
+    expandedPlantId = plantId;
+  }
+  const detail = document.getElementById('detail-' + plantId);
+  if (detail) {
+    detail.classList.toggle('expanded', expandedPlantId === plantId);
+  }
+}
+
+function confirmWaterAll() {
+  if (plants.length === 0) return;
+  deleteTargetId = null;
+  document.getElementById('confirmText').textContent = `Water all ${plants.length} plant${plants.length !== 1 ? 's' : ''}?`;
+  document.querySelector('.confirm-box h3').textContent = 'Water all plants?';
+  document.getElementById('confirmDelete').textContent = 'Water All';
+  document.getElementById('confirmDelete').style.background = 'var(--accent)';
+  document.getElementById('confirmDelete').onclick = async () => {
+    await waterAllPlants();
+    closeConfirmDialog();
+  };
+  confirmOverlay.classList.add('visible');
+}
+
+function closeConfirmDialog() {
+  confirmOverlay.classList.remove('visible');
+  // Reset dialog to defaults for delete usage
+  document.querySelector('.confirm-box h3').textContent = 'Remove plant?';
+  document.getElementById('confirmDelete').textContent = 'Remove';
+  document.getElementById('confirmDelete').style.background = '';
+  document.getElementById('confirmDelete').onclick = async () => {
+    if (deleteTargetId) {
+      await deletePlant(deleteTargetId);
+      deleteTargetId = null;
+      confirmOverlay.classList.remove('visible');
+    }
+  };
 }
 
 // ============================================================
@@ -1355,13 +1471,23 @@ const confirmOverlay = document.getElementById('confirmOverlay');
 
 function confirmDelete(plantId, plantName) {
   deleteTargetId = plantId;
+  document.querySelector('.confirm-box h3').textContent = 'Remove plant?';
   document.getElementById('confirmText').textContent = `This will permanently remove "${plantName}".`;
+  document.getElementById('confirmDelete').textContent = 'Remove';
+  document.getElementById('confirmDelete').style.background = '';
+  document.getElementById('confirmDelete').onclick = async () => {
+    if (deleteTargetId) {
+      await deletePlant(deleteTargetId);
+      deleteTargetId = null;
+      confirmOverlay.classList.remove('visible');
+    }
+  };
   confirmOverlay.classList.add('visible');
 }
 
 document.getElementById('confirmCancel').addEventListener('click', () => {
   deleteTargetId = null;
-  confirmOverlay.classList.remove('visible');
+  closeConfirmDialog();
 });
 
 document.getElementById('confirmDelete').addEventListener('click', async () => {
@@ -1375,7 +1501,7 @@ document.getElementById('confirmDelete').addEventListener('click', async () => {
 confirmOverlay.addEventListener('click', (e) => {
   if (e.target === confirmOverlay) {
     deleteTargetId = null;
-    confirmOverlay.classList.remove('visible');
+    closeConfirmDialog();
   }
 });
 
