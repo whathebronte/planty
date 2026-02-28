@@ -15,6 +15,7 @@ Single-page plant watering tracker app built with vanilla HTML/CSS/JS and Fireba
 - State is held in module-level variables (`plants`, `isLoading`, `expandedPlantId`, etc.)
 - Firestore operations are async functions that update both Firestore and local state, then call `render()`
 - The confirm dialog is shared between delete and water-all actions — `confirmDelete()` and `confirmWaterAll()` configure it dynamically
+- Watering uses optimistic UI with an undo toast: writes to Firestore immediately, and on undo writes the previous value back (Option A). State: `undoToastTimeout`, `undoCallback`. Only one toast at a time — watering again while a toast is showing commits the previous action.
 
 ## UI Layout
 - Compact list view with expandable detail rows (accordion pattern, one open at a time)
@@ -22,6 +23,7 @@ Single-page plant watering tracker app built with vanilla HTML/CSS/JS and Fireba
 - Status communicated via left border color (green/yellow/red/gray)
 - Water button on each row works without expanding
 - Add plant modal with autocomplete from `PLANT_DATABASE`
+- Undo toast appears at bottom of screen after watering (single or all), auto-dismisses after 5 seconds with countdown bar
 
 ## Styling
 - Airbnb-inspired: white background, rounded corners, soft shadows, Inter font, teal-green accent (`#2D9F7C`)

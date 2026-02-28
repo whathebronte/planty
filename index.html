@@ -778,6 +778,84 @@ body {
   background: #c93d3d;
 }
 
+/* Undo toast */
+.undo-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 400;
+  max-width: calc(100% - 32px);
+  width: 360px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  transform: translateX(-50%) translateY(16px);
+  overflow: hidden;
+}
+
+.undo-toast.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.undo-toast-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-600);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.undo-toast-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.undo-toast-btn:hover {
+  background: var(--accent-light);
+}
+
+.undo-toast-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  width: 100%;
+  transform-origin: left;
+  animation: none;
+}
+
+.undo-toast.visible .undo-toast-bar {
+  animation: shrinkBar 5s linear forwards;
+}
+
+@keyframes shrinkBar {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .container {
@@ -837,6 +915,13 @@ body {
       <button class="confirm-delete" id="confirmDelete">Remove</button>
     </div>
   </div>
+</div>
+
+<!-- Undo Toast -->
+<div class="undo-toast" id="undoToast">
+  <span class="undo-toast-text" id="undoToastText"></span>
+  <button class="undo-toast-btn" id="undoToastBtn">Undo</button>
+  <div class="undo-toast-bar" id="undoToastBar"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -924,6 +1009,8 @@ let deleteTargetId = null;
 let selectedEnv = 'indoor';
 let highlightedIndex = -1;
 let expandedPlantId = null;
+let undoToastTimeout = null;
+let undoCallback = null;
 
 // ============================================================
 // UID Management
@@ -1031,15 +1118,34 @@ async function addPlant(name, environment) {
 }
 
 async function waterPlant(plantId) {
+  const plant = plants.find(p => p.id === plantId);
+  if (!plant) return;
+  const previousLastWatered = plant.lastWatered;
   const now = new Date();
+  const newTimestamp = firebase.firestore.Timestamp.fromDate(now);
+  // Optimistic UI update
+  plant.lastWatered = newTimestamp;
+  render();
   try {
-    await plantsRef().doc(plantId).update({ lastWatered: firebase.firestore.Timestamp.fromDate(now) });
-    const plant = plants.find(p => p.id === plantId);
-    if (plant) {
-      plant.lastWatered = firebase.firestore.Timestamp.fromDate(now);
+    await plantsRef().doc(plantId).update({ lastWatered: newTimestamp });
+    showUndoToast(`Watered ${plant.name}`, async () => {
+      // Revert to previous value
+      const revertValue = previousLastWatered || null;
+      plant.lastWatered = revertValue;
       render();
-    }
+      try {
+        await plantsRef().doc(plantId).update({
+          lastWatered: revertValue
+        });
+      } catch (err) {
+        console.error('Failed to undo watering:', err);
+        showError();
+      }
+    });
   } catch (err) {
+    // Revert optimistic update on failure
+    plant.lastWatered = previousLastWatered;
+    render();
     console.error('Failed to water plant:', err);
     showError();
   }
@@ -1075,15 +1181,44 @@ async function updateCustomInterval(plantId, interval) {
 async function waterAllPlants() {
   const now = new Date();
   const ts = firebase.firestore.Timestamp.fromDate(now);
+  // Save previous values for undo
+  const previousValues = plants.map(p => ({ id: p.id, lastWatered: p.lastWatered }));
+  // Optimistic UI update
+  plants.forEach(p => { p.lastWatered = ts; });
+  render();
   try {
     const batch = db.batch();
     plants.forEach(p => {
       batch.update(plantsRef().doc(p.id), { lastWatered: ts });
     });
     await batch.commit();
-    plants.forEach(p => { p.lastWatered = ts; });
-    render();
+    showUndoToast('Watered all plants', async () => {
+      // Revert all plants to previous values
+      previousValues.forEach(prev => {
+        const plant = plants.find(p => p.id === prev.id);
+        if (plant) plant.lastWatered = prev.lastWatered;
+      });
+      render();
+      try {
+        const revertBatch = db.batch();
+        previousValues.forEach(prev => {
+          revertBatch.update(plantsRef().doc(prev.id), {
+            lastWatered: prev.lastWatered || null
+          });
+        });
+        await revertBatch.commit();
+      } catch (err) {
+        console.error('Failed to undo water all:', err);
+        showError();
+      }
+    });
   } catch (err) {
+    // Revert optimistic update on failure
+    previousValues.forEach(prev => {
+      const plant = plants.find(p => p.id === prev.id);
+      if (plant) plant.lastWatered = prev.lastWatered;
+    });
+    render();
     console.error('Failed to water all plants:', err);
     showError();
   }
@@ -1528,6 +1663,62 @@ confirmOverlay.addEventListener('click', (e) => {
     closeConfirmDialog();
   }
 });
+
+// ============================================================
+// Undo Toast
+// ============================================================
+function showUndoToast(message, onUndo) {
+  const toast = document.getElementById('undoToast');
+  const bar = document.getElementById('undoToastBar');
+
+  // If a toast is already showing, commit that action (no undo) and clear it
+  if (undoToastTimeout) {
+    clearTimeout(undoToastTimeout);
+    undoToastTimeout = null;
+    undoCallback = null;
+  }
+
+  document.getElementById('undoToastText').textContent = message;
+  undoCallback = onUndo;
+
+  // Reset the countdown bar animation
+  toast.classList.remove('visible');
+  bar.style.animation = 'none';
+  // Force reflow to restart animation
+  void bar.offsetWidth;
+  bar.style.animation = '';
+  toast.classList.add('visible');
+
+  undoToastTimeout = setTimeout(() => {
+    dismissUndoToast();
+  }, 5000);
+}
+
+function dismissUndoToast() {
+  const toast = document.getElementById('undoToast');
+  toast.classList.remove('visible');
+  if (undoToastTimeout) {
+    clearTimeout(undoToastTimeout);
+    undoToastTimeout = null;
+  }
+  undoCallback = null;
+}
+
+async function handleUndo() {
+  if (!undoCallback) return;
+  const cb = undoCallback;
+  // Clear toast immediately
+  const toast = document.getElementById('undoToast');
+  toast.classList.remove('visible');
+  if (undoToastTimeout) {
+    clearTimeout(undoToastTimeout);
+    undoToastTimeout = null;
+  }
+  undoCallback = null;
+  await cb();
+}
+
+document.getElementById('undoToastBtn').addEventListener('click', handleUndo);
 
 // ============================================================
 // Utility
