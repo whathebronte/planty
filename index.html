@@ -243,17 +243,21 @@ body {
   min-height: 52px;
   user-select: none;
   -webkit-user-select: none;
+  transition: border-color 0.3s ease;
 }
-
-.plant-row-summary.border-green { border-left-color: #2D9F7C; }
-.plant-row-summary.border-yellow { border-left-color: #F5A623; }
-.plant-row-summary.border-red { border-left-color: #E74C3C; }
-.plant-row-summary.border-gray { border-left-color: #CCCCCC; }
 
 .plant-row-emoji {
   font-size: 24px;
   line-height: 1;
   flex-shrink: 0;
+}
+
+.plant-row-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
 }
 
 .plant-row-name {
@@ -263,7 +267,15 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
+}
+
+.plant-row-sub {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
 }
 
 .env-badge {
@@ -280,12 +292,16 @@ body {
   flex-shrink: 0;
 }
 
-.plant-row-days {
-  font-size: 13px;
-  color: var(--gray-400);
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
   flex-shrink: 0;
-  margin-left: auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .plant-row-water {
@@ -338,14 +354,9 @@ body {
 
 .detail-status-label {
   font-weight: 600;
-  color: var(--gray-500);
   font-size: 14px;
+  transition: color 0.3s ease;
 }
-
-.detail-status-label.green { color: var(--green); }
-.detail-status-label.yellow { color: var(--yellow); }
-.detail-status-label.red { color: var(--red); }
-.detail-status-label.gray { color: var(--gray-status); }
 
 .detail-actions {
   display: flex;
@@ -1000,6 +1011,17 @@ const PLANT_DATABASE = [
 ];
 
 // ============================================================
+// Status Color Palette
+// ============================================================
+const STATUS_COLORS = {
+  fresh:   { border: '#2D9F7C', text: '#2D9F7C', badgeBg: '#F0FAF6', label: 'Fresh' },
+  close:   { border: '#D4A13C', text: '#B89030', badgeBg: '#FBF5E6', label: 'Due soon' },
+  due:     { border: '#D4764A', text: '#C06535', badgeBg: '#FAEEE5', label: 'Due today' },
+  overdue: { border: '#CC5555', text: '#B54545', badgeBg: '#FBEAEA', label: 'Overdue' },
+  never:   { border: '#D1D1D1', text: '#999999', badgeBg: '#F3F3F3', label: 'Never watered' },
+};
+
+// ============================================================
 // App State
 // ============================================================
 let uid = null;
@@ -1255,20 +1277,17 @@ function getDaysSinceWatered(plant) {
 
 function getStatus(plant) {
   const days = getDaysSinceWatered(plant);
-  if (days === null) return 'gray';
-  const [lower, upper] = getInterval(plant);
-  if (days <= lower) return 'green';
-  if (days <= upper) return 'yellow';
-  return 'red';
+  if (days === null) return 'never';
+  const [lower] = getInterval(plant);
+  const urgencyPercent = (days / lower) * 100;
+  if (urgencyPercent <= 50) return 'fresh';
+  if (urgencyPercent <= 80) return 'close';
+  if (urgencyPercent <= 100) return 'due';
+  return 'overdue';
 }
 
 function getStatusText(status) {
-  switch (status) {
-    case 'green': return 'On schedule';
-    case 'yellow': return 'Due soon';
-    case 'red': return 'Overdue';
-    default: return 'Never watered';
-  }
+  return STATUS_COLORS[status]?.label || 'Never watered';
 }
 
 // ============================================================
@@ -1317,23 +1336,23 @@ function renderEmptyState() {
 function renderPlantRow(plant) {
   const days = getDaysSinceWatered(plant);
   const status = getStatus(plant);
+  const colors = STATUS_COLORS[status];
   const [lower] = getInterval(plant);
   const emoji = getEmoji(plant.name);
   const isCustom = plant.customInterval != null;
   const isExpanded = expandedPlantId === plant.id;
 
-  let daysShort;
-  if (days === null) {
-    daysShort = 'Never';
-  } else if (days === 0) {
-    daysShort = 'Today';
-  } else if (days === 1) {
-    daysShort = '1 day ago';
+  // Badge label: for 'fresh' show specific days info, for others show status label
+  let badgeLabel;
+  if (status === 'fresh') {
+    if (days === 0) badgeLabel = 'Today';
+    else if (days === 1) badgeLabel = '1 day ago';
+    else badgeLabel = `${days} days ago`;
   } else {
-    daysShort = `${days} days ago`;
+    badgeLabel = colors.label;
   }
 
-  const statusText = getStatusText(status);
+  const statusLabel = colors.label;
 
   let recommendationHtml;
   if (isCustom) {
@@ -1355,16 +1374,19 @@ function renderPlantRow(plant) {
 
   return `
     <div class="plant-row" id="row-${plant.id}">
-      <div class="plant-row-summary border-${status}" onclick="toggleExpand('${plant.id}')">
+      <div class="plant-row-summary" style="border-left-color:${colors.border};" onclick="toggleExpand('${plant.id}')">
         <span class="plant-row-emoji">${emoji}</span>
-        <span class="plant-row-name">${escapeHtml(plant.name)}</span>
+        <div class="plant-row-info">
+          <span class="plant-row-name">${escapeHtml(plant.name)}</span>
+          <span class="plant-row-sub" style="color:${colors.text};">${statusLabel}</span>
+        </div>
         <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
-        <span class="plant-row-days">${daysShort}</span>
+        <span class="status-badge" style="background:${colors.badgeBg}; color:${colors.text};">${badgeLabel}</span>
         <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')">&#128167; Water</button>
       </div>
       <div class="plant-detail${isExpanded ? ' expanded' : ''}" id="detail-${plant.id}">
         <div class="detail-row">
-          <span class="detail-status-label ${status}">${statusText}</span>
+          <span class="detail-status-label" style="color:${colors.text};">${statusLabel}</span>
         </div>
         <div class="detail-row">
           ${recommendationHtml}
