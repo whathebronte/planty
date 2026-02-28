@@ -1,1 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planty — Plant Watering Tracker</title>
 
+<!-- ============================================================
+     FIREBASE CONFIGURATION
+     Replace the firebaseConfig object below with your own
+     Firebase project config. You can find it in the Firebase
+     Console under Project Settings > General > Your Apps.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --white: #FFFFFF;
+  --gray-bg: #F7F7F7;
+  --gray-100: #EBEBEB;
+  --gray-200: #DDDDDD;
+  --gray-300: #B0B0B0;
+  --gray-400: #717171;
+  --gray-500: #484848;
+  --gray-600: #222222;
+  --accent: #2D9F7C;
+  --accent-hover: #248A6B;
+  --accent-light: #E8F5F0;
+  --green: #2D9F7C;
+  --yellow: #E8A317;
+  --red: #E04848;
+  --gray-status: #B0B0B0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 50px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html {
+  font-family: var(--font);
+  color: var(--gray-600);
+  background: var(--gray-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* Top bar */
+.top-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-100);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-bar-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-bar h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-600);
+  letter-spacing: -0.3px;
+}
+
+.top-bar h1 span {
+  color: var(--accent);
+}
+
+/* Error banner */
+.error-banner {
+  background: #FEF2F2;
+  color: var(--red);
+  text-align: center;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+}
+
+.error-banner.visible {
+  display: block;
+}
+
+/* Main container */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 8px;
+}
+
+.empty-state .emoji {
+  font-size: 72px;
+  display: block;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.empty-state h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 15px;
+  color: var(--gray-400);
+  margin-bottom: 24px;
+}
+
+/* Skeleton loader */
+.skeleton-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.skeleton-line {
+  background: var(--gray-100);
+  border-radius: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line.icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.skeleton-line.title {
+  width: 60%;
+  height: 20px;
+  margin-bottom: 12px;
+}
+
+.skeleton-line.subtitle {
+  width: 40%;
+  height: 14px;
+  margin-bottom: 20px;
+}
+
+.skeleton-line.button {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Plant cards */
+.plant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plant-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+
+.plant-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.plant-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.plant-emoji {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+  flex-shrink: 0;
+}
+
+.plant-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.plant-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.env-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.plant-delete {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.plant-delete:hover {
+  color: var(--red);
+  background: #FEF2F2;
+}
+
+/* Status area */
+.status-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: var(--gray-bg);
+  border-radius: var(--radius-sm);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.green { background: var(--green); }
+.status-dot.yellow { background: var(--yellow); }
+.status-dot.red { background: var(--red); }
+.status-dot.gray { background: var(--gray-status); }
+
+.days-display {
+  flex: 1;
+}
+
+.days-count {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-600);
+  line-height: 1.2;
+}
+
+.days-label {
+  font-size: 13px;
+  color: var(--gray-400);
+}
+
+/* Recommendation */
+.recommendation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--gray-400);
+  flex-wrap: wrap;
+}
+
+.recommendation .edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-300);
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.recommendation .edit-btn:hover {
+  color: var(--accent);
+}
+
+.recommendation .reset-link {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.recommendation .reset-link:hover {
+  color: var(--accent-hover);
+}
+
+/* Inline interval editor */
+.interval-editor {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--gray-400);
+}
+
+.interval-editor.active {
+  display: flex;
+}
+
+.interval-editor input {
+  width: 60px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.interval-editor input:focus {
+  border-color: var(--accent);
+}
+
+.interval-editor .save-btn,
+.interval-editor .cancel-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.interval-editor .save-btn {
+  color: var(--accent);
+}
+
+.interval-editor .save-btn:hover {
+  background: var(--accent-light);
+}
+
+.interval-editor .cancel-btn {
+  color: var(--gray-400);
+}
+
+.interval-editor .cancel-btn:hover {
+  background: var(--gray-bg);
+}
+
+/* Water button */
+.water-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.water-btn:hover {
+  background: var(--accent-hover);
+}
+
+.water-btn:active {
+  transform: scale(0.98);
+}
+
+/* Add plant button */
+.add-plant-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--white);
+  border: 2px dashed var(--gray-200);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.add-plant-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-overlay.visible {
+  display: flex;
+}
+
+.modal {
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 600px;
+  padding: 32px 24px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@media (min-width: 601px) {
+  .modal-overlay.visible {
+    align-items: center;
+  }
+  .modal {
+    border-radius: var(--radius);
+    max-height: 80vh;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--gray-400);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 8px;
+}
+
+.modal-close:hover {
+  background: var(--gray-bg);
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input[type="text"]:focus {
+  border-color: var(--accent);
+}
+
+/* Autocomplete */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.autocomplete-list.visible {
+  display: block;
+}
+
+.autocomplete-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.highlighted {
+  background: var(--accent-light);
+}
+
+.autocomplete-item .ac-emoji {
+  font-size: 20px;
+}
+
+.autocomplete-item .ac-name {
+  font-weight: 500;
+}
+
+.autocomplete-item .ac-interval {
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-left: auto;
+}
+
+/* Toggle */
+.toggle-group {
+  display: flex;
+  background: var(--gray-bg);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  gap: 4px;
+}
+
+.toggle-option {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--gray-400);
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.toggle-option.active {
+  background: var(--white);
+  color: var(--gray-600);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  font-weight: 600;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.submit-btn:hover {
+  background: var(--accent-hover);
+}
+
+.submit-btn:disabled {
+  background: var(--gray-200);
+  color: var(--gray-300);
+  cursor: not-allowed;
+}
+
+/* Confirm dialog */
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-overlay.visible {
+  display: flex;
+}
+
+.confirm-box {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  max-width: 340px;
+  width: calc(100% - 32px);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.confirm-box h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.confirm-box p {
+  font-size: 14px;
+  color: var(--gray-400);
+  margin-bottom: 20px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.confirm-cancel {
+  background: var(--gray-bg);
+  color: var(--gray-500);
+}
+
+.confirm-cancel:hover {
+  background: var(--gray-100);
+}
+
+.confirm-delete {
+  background: var(--red);
+  color: var(--white);
+}
+
+.confirm-delete:hover {
+  background: #c93d3d;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .container {
+    padding: 16px 12px;
+  }
+  .plant-card {
+    padding: 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <h1><span>&#127793;</span> Planty</h1>
+  </div>
+</div>
+
+<div class="error-banner" id="errorBanner">
+  Couldn't connect — your changes may not be saved. Retrying&hellip;
+</div>
+
+<div class="container" id="app">
+  <!-- Content injected by JS -->
+</div>
+
+<!-- Add Plant Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Add a Plant</h2>
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="form-group">
+      <label for="plantName">Plant Name</label>
+      <div class="autocomplete-wrapper">
+        <input type="text" id="plantName" placeholder="e.g. Monstera, Basil, Cactus..." autocomplete="off">
+        <div class="autocomplete-list" id="autocompleteList"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Environment</label>
+      <div class="toggle-group">
+        <button class="toggle-option active" data-env="indoor" id="toggleIndoor">&#127968; Indoor</button>
+        <button class="toggle-option" data-env="outdoor" id="toggleOutdoor">&#9728;&#65039; Outdoor</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="addPlantSubmit" disabled>Add Plant</button>
+  </div>
+</div>
+
+<!-- Confirm Delete Dialog -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Remove plant?</h3>
+    <p id="confirmText">This will permanently remove this plant.</p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" id="confirmCancel">Cancel</button>
+      <button class="confirm-delete" id="confirmDelete">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ============================================================
+// FIREBASE CONFIGURATION — Paste your config here
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBhn8bPhA0rNxIp6MBLTS6XHFvbdPE7tfU",
+  authDomain: "planty-441e8.firebaseapp.com",
+  projectId: "planty-441e8",
+  storageBucket: "planty-441e8.firebasestorage.app",
+  messagingSenderId: "574753287039",
+  appId: "1:574753287039:web:16c5e8a65211e87338c84a"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ============================================================
+// Plant Database (50 common plants)
+// ============================================================
+const PLANT_DATABASE = [
+  { name: "Pothos", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Snake Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f" },
+  { name: "Monstera", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Fiddle Leaf Fig", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33" },
+  { name: "Peace Lily", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
+  { name: "Spider Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Rubber Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "ZZ Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f" },
+  { name: "Philodendron", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Calathea", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
+  { name: "Dracaena", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83c\udf3f" },
+  { name: "Chinese Evergreen", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Bird of Paradise", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a" },
+  { name: "Dieffenbachia", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
+  { name: "Croton", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
+  { name: "Succulent", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
+  { name: "Cactus", indoor: [21, 30], outdoor: [14, 21], emoji: "\ud83c\udf35" },
+  { name: "Aloe Vera", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf3f" },
+  { name: "Jade Plant", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
+  { name: "Echeveria", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
+  { name: "Haworthia", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
+  { name: "String of Pearls", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
+  { name: "Burro's Tail", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
+  { name: "Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f" },
+  { name: "Boston Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f" },
+  { name: "Maidenhair Fern", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf3f" },
+  { name: "Bird's Nest Fern", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
+  { name: "Orchid", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf38" },
+  { name: "African Violet", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
+  { name: "Anthurium", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a" },
+  { name: "Begonia", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
+  { name: "Basil", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
+  { name: "Mint", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
+  { name: "Rosemary", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31" },
+  { name: "Lavender", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83d\udc9c" },
+  { name: "Thyme", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31" },
+  { name: "Cilantro", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
+  { name: "Parsley", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31" },
+  { name: "Oregano", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31" },
+  { name: "Chives", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31" },
+  { name: "Sage", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31" },
+  { name: "Tomato", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf45" },
+  { name: "Pepper", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf36\ufe0f" },
+  { name: "Strawberry", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf53" },
+  { name: "Lettuce", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83e\udd6c" },
+  { name: "Parlor Palm", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf34" },
+  { name: "Areca Palm", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf34" },
+  { name: "Ponytail Palm", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf34" },
+  { name: "Money Tree", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33" },
+  { name: "Umbrella Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" }
+];
+
+// ============================================================
+// App State
+// ============================================================
+let uid = null;
+let plants = [];
+let isLoading = true;
+let deleteTargetId = null;
+let selectedEnv = 'indoor';
+let highlightedIndex = -1;
+
+// ============================================================
+// UID Management
+// ============================================================
+function getUidFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id') || null;
+}
+
+function setUidInUrl(newUid) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('id', newUid);
+  window.history.replaceState(null, '', url.toString());
+}
+
+function initUid() {
+  uid = getUidFromUrl();
+  if (!uid) {
+    uid = crypto.randomUUID();
+    setUidInUrl(uid);
+  }
+}
+
+// ============================================================
+// Firestore Operations
+// ============================================================
+function plantsRef() {
+  return db.collection('users').doc(uid).collection('plants');
+}
+
+async function loadPlants() {
+  isLoading = true;
+  render();
+  try {
+    const snapshot = await plantsRef().orderBy('createdAt', 'asc').get();
+    plants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    hideError();
+  } catch (err) {
+    console.error('Failed to load plants:', err);
+    showError();
+    retryLoad();
+  }
+  isLoading = false;
+  render();
+}
+
+let retryTimeout = null;
+let retryCount = 0;
+
+function retryLoad() {
+  if (retryCount >= 4) return;
+  const delays = [2000, 4000, 8000, 16000];
+  retryTimeout = setTimeout(async () => {
+    retryCount++;
+    try {
+      const snapshot = await plantsRef().orderBy('createdAt', 'asc').get();
+      plants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      hideError();
+      isLoading = false;
+      retryCount = 0;
+      render();
+    } catch (err) {
+      console.error('Retry failed:', err);
+      retryLoad();
+    }
+  }, delays[retryCount]);
+}
+
+async function addPlant(name, environment) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  const docData = {
+    name: trimmed,
+    environment,
+    lastWatered: null,
+    customInterval: null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try {
+    const docRef = await plantsRef().add(docData);
+    plants.push({ id: docRef.id, ...docData, createdAt: new Date() });
+    render();
+  } catch (err) {
+    console.error('Failed to add plant:', err);
+    showError();
+  }
+}
+
+async function waterPlant(plantId) {
+  const now = new Date();
+  try {
+    await plantsRef().doc(plantId).update({ lastWatered: firebase.firestore.Timestamp.fromDate(now) });
+    const plant = plants.find(p => p.id === plantId);
+    if (plant) {
+      plant.lastWatered = firebase.firestore.Timestamp.fromDate(now);
+      render();
+    }
+  } catch (err) {
+    console.error('Failed to water plant:', err);
+    showError();
+  }
+}
+
+async function deletePlant(plantId) {
+  try {
+    await plantsRef().doc(plantId).delete();
+    plants = plants.filter(p => p.id !== plantId);
+    render();
+  } catch (err) {
+    console.error('Failed to delete plant:', err);
+    showError();
+  }
+}
+
+async function updateCustomInterval(plantId, interval) {
+  const val = interval === null ? null : Number(interval);
+  try {
+    await plantsRef().doc(plantId).update({ customInterval: val });
+    const plant = plants.find(p => p.id === plantId);
+    if (plant) {
+      plant.customInterval = val;
+      render();
+    }
+  } catch (err) {
+    console.error('Failed to update interval:', err);
+    showError();
+  }
+}
+
+// ============================================================
+// Plant Lookup Helpers
+// ============================================================
+function findPlantData(name) {
+  return PLANT_DATABASE.find(p => p.name.toLowerCase() === name.toLowerCase()) || null;
+}
+
+function getInterval(plant) {
+  if (plant.customInterval != null) {
+    return [plant.customInterval, plant.customInterval];
+  }
+  const data = findPlantData(plant.name);
+  if (data) {
+    return plant.environment === 'outdoor' ? data.outdoor : data.indoor;
+  }
+  return plant.environment === 'outdoor' ? [5, 5] : [7, 7];
+}
+
+function getEmoji(name) {
+  const data = findPlantData(name);
+  return data ? data.emoji : '\ud83e\udeb4';
+}
+
+function getDaysSinceWatered(plant) {
+  if (!plant.lastWatered) return null;
+  const lastDate = plant.lastWatered.toDate ? plant.lastWatered.toDate() : new Date(plant.lastWatered);
+  return Math.floor((Date.now() - lastDate.getTime()) / 86400000);
+}
+
+function getStatus(plant) {
+  const days = getDaysSinceWatered(plant);
+  if (days === null) return 'gray';
+  const [lower, upper] = getInterval(plant);
+  if (days <= lower) return 'green';
+  if (days <= upper) return 'yellow';
+  return 'red';
+}
+
+// ============================================================
+// Error Banner
+// ============================================================
+function showError() {
+  document.getElementById('errorBanner').classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorBanner').classList.remove('visible');
+}
+
+// ============================================================
+// Rendering
+// ============================================================
+function renderSkeleton() {
+  return `
+    <div class="plant-list">
+      ${[1, 2, 3].map(() => `
+        <div class="skeleton-card">
+          <div class="skeleton-line icon"></div>
+          <div class="skeleton-line title"></div>
+          <div class="skeleton-line subtitle"></div>
+          <div class="skeleton-line button"></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderEmptyState() {
+  return `
+    <div class="empty-state">
+      <span class="emoji">\ud83c\udf31</span>
+      <h2>No plants yet</h2>
+      <p>Add your first plant and start tracking your watering schedule!</p>
+      <button class="submit-btn" style="max-width: 240px; margin: 0 auto;" onclick="openAddModal()">Add Your First Plant</button>
+    </div>
+  `;
+}
+
+function renderPlantCard(plant) {
+  const days = getDaysSinceWatered(plant);
+  const status = getStatus(plant);
+  const [lower] = getInterval(plant);
+  const emoji = getEmoji(plant.name);
+  const isCustom = plant.customInterval != null;
+
+  let daysText, daysLabel;
+  if (days === null) {
+    daysText = '—';
+    daysLabel = 'Never watered';
+  } else if (days === 0) {
+    daysText = '0';
+    daysLabel = 'Watered today';
+  } else if (days === 1) {
+    daysText = '1';
+    daysLabel = 'day ago';
+  } else {
+    daysText = String(days);
+    daysLabel = 'days ago';
+  }
+
+  let recommendationHtml;
+  if (isCustom) {
+    recommendationHtml = `
+      <div class="recommendation" id="rec-${plant.id}">
+        <span>Custom: every ${plant.customInterval} day${plant.customInterval !== 1 ? 's' : ''}</span>
+        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+        <button class="reset-link" onclick="resetInterval('${plant.id}')">Reset to default</button>
+      </div>
+    `;
+  } else {
+    recommendationHtml = `
+      <div class="recommendation" id="rec-${plant.id}">
+        <span>Water again in ~${lower} day${lower !== 1 ? 's' : ''}</span>
+        <button class="edit-btn" onclick="openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="plant-card" id="card-${plant.id}">
+      <div class="plant-card-header">
+        <div class="plant-emoji">${emoji}</div>
+        <div class="plant-info">
+          <div class="plant-name">
+            ${escapeHtml(plant.name)}
+            <span class="env-badge">${plant.environment === 'indoor' ? 'Indoor' : 'Outdoor'}</span>
+          </div>
+        </div>
+        <button class="plant-delete" onclick="confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">&times;</button>
+      </div>
+      <div class="status-area">
+        <div class="status-dot ${status}"></div>
+        <div class="days-display">
+          <div class="days-count">${daysText}</div>
+          <div class="days-label">${daysLabel}</div>
+        </div>
+      </div>
+      ${recommendationHtml}
+      <div class="interval-editor" id="editor-${plant.id}">
+        <span>Every</span>
+        <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}">
+        <span>days</span>
+        <button class="save-btn" onclick="saveInterval('${plant.id}')">Save</button>
+        <button class="cancel-btn" onclick="closeIntervalEditor('${plant.id}')">Cancel</button>
+      </div>
+      <button class="water-btn" onclick="waterPlant('${plant.id}')">&#128167; Water Now</button>
+    </div>
+  `;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (isLoading) {
+    app.innerHTML = renderSkeleton();
+    return;
+  }
+  if (plants.length === 0) {
+    app.innerHTML = renderEmptyState();
+    return;
+  }
+  app.innerHTML = `
+    <div class="plant-list">
+      ${plants.map(renderPlantCard).join('')}
+      <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
+    </div>
+  `;
+}
+
+// ============================================================
+// Interval Editing
+// ============================================================
+function openIntervalEditor(plantId) {
+  const rec = document.getElementById(`rec-${plantId}`);
+  const editor = document.getElementById(`editor-${plantId}`);
+  if (rec) rec.style.display = 'none';
+  if (editor) editor.classList.add('active');
+  const input = document.getElementById(`input-${plantId}`);
+  if (input) { input.focus(); input.select(); }
+}
+
+function closeIntervalEditor(plantId) {
+  const rec = document.getElementById(`rec-${plantId}`);
+  const editor = document.getElementById(`editor-${plantId}`);
+  if (rec) rec.style.display = '';
+  if (editor) editor.classList.remove('active');
+}
+
+function saveInterval(plantId) {
+  const input = document.getElementById(`input-${plantId}`);
+  const val = parseInt(input.value, 10);
+  if (val > 0 && val <= 365) {
+    updateCustomInterval(plantId, val);
+  }
+  closeIntervalEditor(plantId);
+}
+
+function resetInterval(plantId) {
+  updateCustomInterval(plantId, null);
+}
+
+// ============================================================
+// Add Plant Modal
+// ============================================================
+const addModal = document.getElementById('addModal');
+const plantNameInput = document.getElementById('plantName');
+const autocompleteList = document.getElementById('autocompleteList');
+const addPlantSubmit = document.getElementById('addPlantSubmit');
+const toggleIndoor = document.getElementById('toggleIndoor');
+const toggleOutdoor = document.getElementById('toggleOutdoor');
+
+function openAddModal() {
+  plantNameInput.value = '';
+  selectedEnv = 'indoor';
+  toggleIndoor.classList.add('active');
+  toggleOutdoor.classList.remove('active');
+  addPlantSubmit.disabled = true;
+  autocompleteList.classList.remove('visible');
+  highlightedIndex = -1;
+  addModal.classList.add('visible');
+  setTimeout(() => plantNameInput.focus(), 100);
+}
+
+function closeAddModal() {
+  addModal.classList.remove('visible');
+  autocompleteList.classList.remove('visible');
+  highlightedIndex = -1;
+}
+
+document.getElementById('modalClose').addEventListener('click', closeAddModal);
+
+addModal.addEventListener('click', (e) => {
+  if (e.target === addModal) closeAddModal();
+});
+
+toggleIndoor.addEventListener('click', () => {
+  selectedEnv = 'indoor';
+  toggleIndoor.classList.add('active');
+  toggleOutdoor.classList.remove('active');
+});
+
+toggleOutdoor.addEventListener('click', () => {
+  selectedEnv = 'outdoor';
+  toggleOutdoor.classList.add('active');
+  toggleIndoor.classList.remove('active');
+});
+
+plantNameInput.addEventListener('input', () => {
+  const val = plantNameInput.value.trim();
+  addPlantSubmit.disabled = val.length === 0;
+  highlightedIndex = -1;
+  if (val.length === 0) {
+    autocompleteList.classList.remove('visible');
+    return;
+  }
+  const matches = PLANT_DATABASE.filter(p => p.name.toLowerCase().includes(val.toLowerCase()));
+  if (matches.length === 0) {
+    autocompleteList.classList.remove('visible');
+    return;
+  }
+  autocompleteList.innerHTML = matches.map((p, i) => `
+    <div class="autocomplete-item" data-name="${escapeHtml(p.name)}" data-index="${i}">
+      <span class="ac-emoji">${p.emoji}</span>
+      <span class="ac-name">${escapeHtml(p.name)}</span>
+      <span class="ac-interval">${selectedEnv === 'outdoor' ? p.outdoor[0] : p.indoor[0]}d</span>
+    </div>
+  `).join('');
+  autocompleteList.classList.add('visible');
+
+  autocompleteList.querySelectorAll('.autocomplete-item').forEach(item => {
+    item.addEventListener('click', () => {
+      plantNameInput.value = item.dataset.name;
+      addPlantSubmit.disabled = false;
+      autocompleteList.classList.remove('visible');
+      highlightedIndex = -1;
+    });
+  });
+});
+
+plantNameInput.addEventListener('keydown', (e) => {
+  const items = autocompleteList.querySelectorAll('.autocomplete-item');
+  if (!autocompleteList.classList.contains('visible') || items.length === 0) {
+    if (e.key === 'Enter' && !addPlantSubmit.disabled) {
+      e.preventDefault();
+      submitPlant();
+    }
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    highlightedIndex = Math.min(highlightedIndex + 1, items.length - 1);
+    updateHighlight(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    highlightedIndex = Math.max(highlightedIndex - 1, -1);
+    updateHighlight(items);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (highlightedIndex >= 0 && highlightedIndex < items.length) {
+      plantNameInput.value = items[highlightedIndex].dataset.name;
+      addPlantSubmit.disabled = false;
+      autocompleteList.classList.remove('visible');
+      highlightedIndex = -1;
+    } else if (!addPlantSubmit.disabled) {
+      submitPlant();
+    }
+  } else if (e.key === 'Escape') {
+    autocompleteList.classList.remove('visible');
+    highlightedIndex = -1;
+  }
+});
+
+function updateHighlight(items) {
+  items.forEach((item, i) => {
+    item.classList.toggle('highlighted', i === highlightedIndex);
+  });
+  if (highlightedIndex >= 0 && items[highlightedIndex]) {
+    items[highlightedIndex].scrollIntoView({ block: 'nearest' });
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.autocomplete-wrapper')) {
+    autocompleteList.classList.remove('visible');
+    highlightedIndex = -1;
+  }
+});
+
+addPlantSubmit.addEventListener('click', submitPlant);
+
+async function submitPlant() {
+  const name = plantNameInput.value.trim();
+  if (!name) return;
+  addPlantSubmit.disabled = true;
+  await addPlant(name, selectedEnv);
+  closeAddModal();
+}
+
+// ============================================================
+// Delete Confirmation
+// ============================================================
+const confirmOverlay = document.getElementById('confirmOverlay');
+
+function confirmDelete(plantId, plantName) {
+  deleteTargetId = plantId;
+  document.getElementById('confirmText').textContent = `This will permanently remove "${plantName}".`;
+  confirmOverlay.classList.add('visible');
+}
+
+document.getElementById('confirmCancel').addEventListener('click', () => {
+  deleteTargetId = null;
+  confirmOverlay.classList.remove('visible');
+});
+
+document.getElementById('confirmDelete').addEventListener('click', async () => {
+  if (deleteTargetId) {
+    await deletePlant(deleteTargetId);
+    deleteTargetId = null;
+    confirmOverlay.classList.remove('visible');
+  }
+});
+
+confirmOverlay.addEventListener('click', (e) => {
+  if (e.target === confirmOverlay) {
+    deleteTargetId = null;
+    confirmOverlay.classList.remove('visible');
+  }
+});
+
+// ============================================================
+// Utility
+// ============================================================
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ============================================================
+// Initialize
+// ============================================================
+initUid();
+loadPlants();
+</script>
+</body>
+</html>
