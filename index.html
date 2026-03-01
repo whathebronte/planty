@@ -475,6 +475,24 @@ body {
   background: #FEF2F2;
 }
 
+.plant-reset {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.plant-reset:hover {
+  color: #888;
+  background: #f3f3f3;
+}
+
 /* Inline interval editor */
 .interval-editor {
   display: none;
@@ -1258,6 +1276,19 @@ async function deletePlant(plantId) {
   }
 }
 
+async function resetPlant(plantId) {
+  try {
+    await plantsRef().doc(plantId).update({ lastWatered: null });
+    const plant = plants.find(p => p.id === plantId);
+    if (plant) {
+      plant.lastWatered = null;
+      render();
+    }
+  } catch (err) {
+    console.error('Error resetting plant:', err);
+  }
+}
+
 async function updateCustomInterval(plantId, interval) {
   const val = interval === null ? null : Number(interval);
   try {
@@ -1517,6 +1548,7 @@ function renderPlantRow(plant) {
               <button class="save-btn" onclick="event.stopPropagation(); saveInterval('${plant.id}')">Save</button>
               <button class="cancel-btn" onclick="event.stopPropagation(); closeIntervalEditor('${plant.id}')">Cancel</button>
             </div>
+            <button class="plant-reset" onclick="event.stopPropagation(); confirmReset('${plant.id}', '${escapeHtml(plant.name)}')" title="Reset to never watered">↺ Reset</button>
             <button class="plant-delete" onclick="event.stopPropagation(); confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">🗑 Remove</button>
           </div>
         </div>
@@ -1779,6 +1811,19 @@ function confirmDelete(plantId, plantName) {
       deleteTargetId = null;
       confirmOverlay.classList.remove('visible');
     }
+  };
+  confirmOverlay.classList.add('visible');
+}
+
+function confirmReset(plantId, plantName) {
+  deleteTargetId = null;
+  document.querySelector('.confirm-box h3').textContent = 'Reset watering?';
+  document.getElementById('confirmText').textContent = `This will mark "${plantName}" as never watered.`;
+  document.getElementById('confirmDelete').textContent = 'Reset';
+  document.getElementById('confirmDelete').style.background = '#888';
+  document.getElementById('confirmDelete').onclick = async () => {
+    await resetPlant(plantId);
+    confirmOverlay.classList.remove('visible');
   };
   confirmOverlay.classList.add('visible');
 }
