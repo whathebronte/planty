@@ -14,7 +14,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 
 <style>
 *, *::before, *::after {
@@ -32,10 +32,13 @@
   --gray-400: #717171;
   --gray-500: #484848;
   --gray-600: #222222;
-  --accent: #2D9F7C;
-  --accent-hover: #248A6B;
-  --accent-light: #E8F5F0;
-  --green: #2D9F7C;
+  --accent: #3eb489;
+  --accent-hover: #35a07a;
+  --accent-light: #eaf7f1;
+  --icon-bg: #f4fbf7;
+  --water-btn-bg: #eef7ff;
+  --water-btn-hover: #d8eeff;
+  --green: #3eb489;
   --yellow: #E8A317;
   --red: #E04848;
   --gray-status: #B0B0B0;
@@ -61,34 +64,17 @@ body {
   padding-bottom: 80px;
 }
 
-/* Top bar */
-.top-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--gray-100);
-  padding: 16px 24px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.top-bar-inner {
-  max-width: 600px;
-  margin: 0 auto;
+/* App header */
+.app-header {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.top-bar h1 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gray-600);
-  letter-spacing: -0.3px;
-}
-
-.top-bar h1 span {
-  color: var(--accent);
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 /* Error banner */
@@ -202,17 +188,22 @@ body {
 /* Water All button */
 .water-all-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px 20px;
   background: transparent;
   color: var(--accent);
   border: 1.5px solid var(--accent);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .water-all-btn:hover {
@@ -226,165 +217,243 @@ body {
   color: #FFFFFF;
 }
 
-/* Compact plant row */
-.plant-row {
-  background: var(--white);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
+/* Plant cards */
+.plant-card {
+  border-radius: var(--radius);
+  border: 1px solid #f0f0f0;
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  background: var(--white);
+  transition: box-shadow 0.2s ease;
 }
 
-.plant-row:hover {
-  box-shadow: var(--shadow-lg);
+.plant-card.open {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  border-color: #e8e8e8;
 }
 
-.plant-row-summary {
+.card-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 13px;
+  padding: 13px 14px;
   cursor: pointer;
-  border-left: 4px solid var(--gray-status);
-  min-height: 64px;
   user-select: none;
   -webkit-user-select: none;
-  transition: border-color 0.3s ease;
 }
 
-.plant-row-emoji {
-  font-size: 28px;
-  line-height: 1;
-  flex-shrink: 0;
-  width: 36px;
-  text-align: center;
-}
-
-.plant-row-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-  gap: 3px;
-}
-
-.plant-row-name-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.plant-row-name {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--gray-600);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.plant-row-sub {
-  font-size: 12px;
-  font-weight: 400;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.3s ease;
-}
-
-.env-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-light);
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.plant-row-water {
+.plant-icon {
+  font-size: 26px;
   width: 44px;
   height: 44px;
-  background: var(--accent-light);
-  border: none;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform 0.12s, background 0.12s;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--icon-bg);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.plant-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.plant-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.plant-status {
+  font-family: var(--font);
+  font-size: 12px;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.water-circle {
+  width: 40px;
+  height: 40px;
+  background: var(--water-btn-bg);
+  border: none;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s;
   padding: 0;
 }
 
-.plant-row-water:hover {
-  background: #d0eae0;
+.water-circle:hover {
+  background: var(--water-btn-hover);
 }
 
-.plant-row-water:active {
+.water-circle:active {
   transform: scale(0.85);
-  background: #b8ddd0;
 }
 
-/* Expanded detail */
-.plant-detail {
-  display: none;
-  padding: 14px 16px 16px 20px;
-  background: var(--gray-bg);
-  border-top: 1px solid var(--gray-100);
+.chevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #ccc;
+  transition: transform 0.22s ease, color 0.22s ease;
 }
 
-.plant-detail.expanded {
-  display: block;
+.plant-card.open .chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
 }
 
-.detail-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+/* Expanded panel */
+.expand-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+  background: #fafafa;
+  border-top: 1px solid transparent;
+}
+
+.plant-card.open .expand-panel {
+  max-height: 520px;
+  border-top-color: #f0f0f0;
+}
+
+.expand-inner {
+  padding: 16px 14px 18px;
+}
+
+.expand-title {
+  font-family: var(--font-display);
   font-size: 13px;
-  color: var(--gray-400);
-}
-
-.detail-row:last-child {
-  margin-bottom: 0;
-}
-
-.detail-status-label {
   font-weight: 600;
-  font-size: 14px;
-  transition: color 0.3s ease;
+  color: #888;
+  letter-spacing: 0.01em;
+  margin-bottom: 10px;
+  font-style: italic;
 }
 
-.detail-actions {
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.detail-item {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+  padding: 10px 12px;
+}
+
+.detail-label {
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  color: #bbb;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.detail-value {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.detail-value.green {
+  color: var(--accent);
+}
+
+.care-note {
+  font-family: var(--font);
+  font-size: 12px;
+  color: #999;
+  line-height: 1.6;
+  border-top: 1px solid #ebebeb;
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.care-note strong {
+  font-weight: 600;
+  color: #666;
+}
+
+.expand-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid #ebebeb;
+}
+
+.expand-rec {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray-400);
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.expand-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gray-300);
+  font-size: 12px;
+  font-family: var(--font);
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.expand-edit-btn:hover {
+  color: var(--accent);
+}
+
+.reset-link {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font);
+}
+
+.reset-link:hover {
+  color: var(--accent-hover);
 }
 
 .plant-delete {
@@ -392,8 +461,8 @@ body {
   border: none;
   color: var(--gray-300);
   cursor: pointer;
-  padding: 6px 10px;
-  font-size: 13px;
+  padding: 4px 8px;
+  font-size: 12px;
   font-weight: 500;
   font-family: var(--font);
   border-radius: 6px;
@@ -404,45 +473,6 @@ body {
 .plant-delete:hover {
   color: var(--red);
   background: #FEF2F2;
-}
-
-/* Recommendation */
-.recommendation {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--gray-400);
-  flex-wrap: wrap;
-}
-
-.recommendation .edit-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--gray-300);
-  font-size: 14px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: color 0.2s;
-}
-
-.recommendation .edit-btn:hover {
-  color: var(--accent);
-}
-
-.recommendation .reset-link {
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 12px;
-  text-decoration: underline;
-  background: none;
-  border: none;
-  padding: 0;
-}
-
-.recommendation .reset-link:hover {
-  color: var(--accent-hover);
 }
 
 /* Inline interval editor */
@@ -507,26 +537,22 @@ body {
 /* Add plant button */
 .add-plant-btn {
   width: 100%;
-  padding: 18px;
-  background: var(--white);
-  border: 2px dashed var(--gray-200);
+  padding: 13px;
+  background: transparent;
+  border: 1.5px dashed var(--gray-200);
   border-radius: var(--radius);
   font-family: var(--font);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--gray-400);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-300);
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  transition: border-color 0.15s, color 0.15s;
+  margin-top: 6px;
 }
 
 .add-plant-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
-  background: var(--accent-light);
 }
 
 /* Modal overlay */
@@ -899,18 +925,15 @@ body {
 </head>
 <body>
 
-<div class="top-bar">
-  <div class="top-bar-inner">
-    <h1><span>&#129716;</span> Planty</h1>
-  </div>
-</div>
-
 <div class="error-banner" id="errorBanner">
   Couldn't connect — your changes may not be saved. Retrying&hellip;
 </div>
 
-<div class="container" id="app">
-  <!-- Content injected by JS -->
+<div class="container">
+  <div class="app-header">🪴 Planty</div>
+  <div id="app">
+    <!-- Content injected by JS -->
+  </div>
 </div>
 
 <!-- Add Plant Modal -->
@@ -980,67 +1003,67 @@ const db = firebase.firestore();
 // Plant Database (50 common plants)
 // ============================================================
 const PLANT_DATABASE = [
-  { name: "Pothos", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Snake Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f" },
-  { name: "Monstera", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Fiddle Leaf Fig", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33" },
-  { name: "Peace Lily", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
-  { name: "Spider Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Rubber Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "ZZ Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f" },
-  { name: "Philodendron", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Calathea", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
-  { name: "Dracaena", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83c\udf3f" },
-  { name: "Chinese Evergreen", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Bird of Paradise", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a" },
-  { name: "Dieffenbachia", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" },
-  { name: "Croton", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
-  { name: "Succulent", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
-  { name: "Cactus", indoor: [21, 30], outdoor: [14, 21], emoji: "\ud83c\udf35" },
-  { name: "Aloe Vera", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf3f" },
-  { name: "Jade Plant", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
-  { name: "Echeveria", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
-  { name: "Haworthia", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
-  { name: "String of Pearls", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83e\udeb4" },
-  { name: "Burro's Tail", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4" },
-  { name: "Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f" },
-  { name: "Boston Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f" },
-  { name: "Maidenhair Fern", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf3f" },
-  { name: "Bird's Nest Fern", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f" },
-  { name: "Orchid", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf38" },
-  { name: "African Violet", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
-  { name: "Anthurium", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a" },
-  { name: "Begonia", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38" },
-  { name: "Basil", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
-  { name: "Mint", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
-  { name: "Rosemary", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31" },
-  { name: "Lavender", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83d\udc9c" },
-  { name: "Thyme", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31" },
-  { name: "Cilantro", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31" },
-  { name: "Parsley", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31" },
-  { name: "Oregano", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31" },
-  { name: "Chives", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31" },
-  { name: "Sage", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31" },
-  { name: "Tomato", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf45" },
-  { name: "Pepper", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf36\ufe0f" },
-  { name: "Strawberry", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf53" },
-  { name: "Lettuce", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83e\udd6c" },
-  { name: "Parlor Palm", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf34" },
-  { name: "Areca Palm", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf34" },
-  { name: "Ponytail Palm", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf34" },
-  { name: "Money Tree", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33" },
-  { name: "Umbrella Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f" }
+  { name: "Pothos", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Low–bright", tip: "Tolerates low light but grows faster in bright indirect light; trim long vines to keep it bushy." },
+  { name: "Snake Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f", light: "Low–indirect", tip: "One of the toughest plants around—thrives on neglect and tolerates almost any light level." },
+  { name: "Monstera", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Indirect", tip: "Monsteras love humidity; mist the leaves weekly or place on a pebble tray with water nearby." },
+  { name: "Fiddle Leaf Fig", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33", light: "Bright indirect", tip: "Keep in a stable spot—fiddle leaf figs are sensitive to being moved and dislike drafts." },
+  { name: "Peace Lily", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38", light: "Low–medium", tip: "Drooping leaves are a reliable thirst signal; it will perk back up quickly after watering." },
+  { name: "Spider Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Indirect", tip: "A great air purifier; let soil dry between waterings to prevent root rot." },
+  { name: "Rubber Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Bright indirect", tip: "Wipe leaves with a damp cloth monthly to keep them glossy and help the plant breathe." },
+  { name: "ZZ Plant", indoor: [14, 21], outdoor: [10, 14], emoji: "\ud83c\udf3f", light: "Low–bright", tip: "Nearly indestructible—it stores water in its rhizomes, so underwatering is far safer than overwatering." },
+  { name: "Philodendron", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Indirect", tip: "Fast grower in bright indirect light; let the top inch of soil dry out between waterings." },
+  { name: "Calathea", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f", light: "Medium indirect", tip: "Use filtered or distilled water—tap water minerals cause the leaf tips to turn brown." },
+  { name: "Dracaena", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83c\udf3f", light: "Low–medium", tip: "Sensitive to fluoride; use filtered or rainwater when possible to prevent leaf tip burn." },
+  { name: "Chinese Evergreen", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Low–indirect", tip: "One of the easiest plants for dim spaces; avoid direct sun which will scorch the leaves." },
+  { name: "Bird of Paradise", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a", light: "Bright indirect", tip: "Needs several hours of bright light daily indoors; wipe large leaves to remove dust." },
+  { name: "Dieffenbachia", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Medium indirect", tip: "Toxic if ingested—keep away from children and pets and wash hands after handling." },
+  { name: "Croton", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f", light: "Bright direct", tip: "More light equals more vibrant color; place in your sunniest spot for the best foliage display." },
+  { name: "Succulent", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4", light: "Bright sun", tip: "Let soil dry completely between waterings; soggy soil is the fastest way to cause root rot." },
+  { name: "Cactus", indoor: [21, 30], outdoor: [14, 21], emoji: "\ud83c\udf35", light: "Bright sun", tip: "Less is more—overwatering is the number one cactus killer; when in doubt, wait longer." },
+  { name: "Aloe Vera", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf3f", light: "Bright indirect", tip: "Let the soil dry out fully between waterings; aloe stores water in its leaves so it's very drought tolerant." },
+  { name: "Jade Plant", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4", light: "Bright indirect", tip: "Feed lightly in spring and summer only; with good care jade plants can live for decades." },
+  { name: "Echeveria", indoor: [14, 21], outdoor: [7, 10], emoji: "\ud83e\udeb4", light: "Bright sun", tip: "Rotate the pot regularly so all sides get even light; etiolation (stretching) means it needs more sun." },
+  { name: "Haworthia", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4", light: "Indirect", tip: "One of the few succulents that genuinely tolerates lower light—perfect for windowsill shade." },
+  { name: "String of Pearls", indoor: [10, 14], outdoor: [7, 10], emoji: "\ud83e\udeb4", light: "Bright indirect", tip: "Water from the base when possible to prevent rot on the delicate trailing stems." },
+  { name: "Burro's Tail", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83e\udeb4", light: "Bright indirect", tip: "Leaves fall off at the slightest touch—place somewhere it won't be disturbed once settled." },
+  { name: "Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f", light: "Indirect", tip: "Keep soil consistently moist and mist regularly; ferns hate drying out and love humidity." },
+  { name: "Boston Fern", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf3f", light: "Indirect", tip: "High humidity is key; set on a pebble tray or grow in a bathroom for best results." },
+  { name: "Maidenhair Fern", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf3f", light: "Medium indirect", tip: "The most demanding fern—needs consistently moist soil, high humidity, and no cold drafts." },
+  { name: "Bird's Nest Fern", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf3f", light: "Low–medium", tip: "Never pour water into the central rosette; always water at the base to prevent crown rot." },
+  { name: "Orchid", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf38", light: "Bright indirect", tip: "Roots need airflow; clear pots let you check moisture levels without disturbing the plant." },
+  { name: "African Violet", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38", light: "Medium indirect", tip: "Water from the base to avoid water spots on the fuzzy leaves, which cause permanent marks." },
+  { name: "Anthurium", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3a", light: "Bright indirect", tip: "The waxy blooms last for months; wipe glossy leaves with a damp cloth to keep them dust-free." },
+  { name: "Begonia", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf38", light: "Bright indirect", tip: "Let the top inch of soil dry between waterings; begonias are prone to root rot if kept too wet." },
+  { name: "Basil", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31", light: "Full sun", tip: "Pinch off flower buds as soon as they appear to encourage leafy, bushy growth." },
+  { name: "Mint", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31", light: "Full sun", tip: "Grow mint in its own container—it spreads aggressively via runners and will crowd out other plants." },
+  { name: "Rosemary", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31", light: "Full sun", tip: "Prefers slightly dry conditions; great drainage matters more than frequent watering." },
+  { name: "Lavender", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83d\udc9c", light: "Full sun", tip: "Needs excellent drainage and full sun; lavender is very drought-tolerant once established." },
+  { name: "Thyme", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31", light: "Full sun", tip: "Drought-tolerant herb; water deeply but infrequently and ensure good air circulation." },
+  { name: "Cilantro", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf31", light: "Full sun", tip: "Bolts quickly in heat; sow in spring or fall for the best leaf production before it flowers." },
+  { name: "Parsley", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31", light: "Full sun", tip: "Slow to germinate but vigorous once established; harvest outer stems to encourage new growth." },
+  { name: "Oregano", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf31", light: "Full sun", tip: "Flavor intensifies when slightly stressed—avoid over-watering or over-fertilizing for best taste." },
+  { name: "Chives", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf31", light: "Full sun", tip: "Snip regularly to encourage fresh growth; the purple flowers are edible and look beautiful." },
+  { name: "Sage", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf31", light: "Full sun", tip: "Drought-tolerant once established; sandy, well-drained soil is ideal to prevent root rot." },
+  { name: "Tomato", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83c\udf45", light: "Full sun", tip: "Needs at least 8 hours of direct sun and consistent moisture for good fruit set and flavor." },
+  { name: "Pepper", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf36\ufe0f", light: "Full sun", tip: "Loves heat; use dark-colored pots outdoors to warm the root zone and speed up growth." },
+  { name: "Strawberry", indoor: [3, 5], outdoor: [2, 3], emoji: "\ud83c\udf53", light: "Full sun", tip: "Runners that form after fruiting can be potted up to create new plants for free next season." },
+  { name: "Lettuce", indoor: [2, 3], outdoor: [1, 2], emoji: "\ud83e\udd6c", light: "Partial sun", tip: "Harvest outer leaves regularly rather than cutting the whole plant to extend the growing season." },
+  { name: "Parlor Palm", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf34", light: "Low–medium", tip: "Great beginner palm—tolerates low light and irregular watering better than most palms." },
+  { name: "Areca Palm", indoor: [5, 7], outdoor: [3, 5], emoji: "\ud83c\udf34", light: "Bright indirect", tip: "A natural humidifier that transpires a lot of moisture; great for dry indoor spaces." },
+  { name: "Ponytail Palm", indoor: [14, 21], outdoor: [7, 14], emoji: "\ud83c\udf34", light: "Bright sun", tip: "Stores water in its swollen trunk—one of the most drought-tolerant plants you can own." },
+  { name: "Money Tree", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf33", light: "Indirect", tip: "Rotate weekly for even growth; the braided trunk makes it a striking focal point in any room." },
+  { name: "Umbrella Plant", indoor: [7, 10], outdoor: [5, 7], emoji: "\ud83c\udf3f", light: "Bright indirect", tip: "Prune regularly to keep it bushy; yellowing and dropping leaves signal overwatering." }
 ];
 
 // ============================================================
 // Status Color Palette
 // ============================================================
 const STATUS_COLORS = {
-  fresh:   { border: '#2D9F7C', text: '#2D9F7C', badgeBg: '#F0FAF6', label: 'Fresh' },
-  close:   { border: '#D4A13C', text: '#B89030', badgeBg: '#FBF5E6', label: 'Getting close' },
-  due:     { border: '#D4764A', text: '#C06535', badgeBg: '#FAEEE5', label: 'Due today' },
-  overdue: { border: '#CC5555', text: '#B54545', badgeBg: '#FBEAEA', label: 'Overdue' },
-  never:   { border: '#D1D1D1', text: '#999999', badgeBg: '#F3F3F3', label: 'Never watered' },
+  fresh:   { text: '#3eb489', badgeBg: '#eaf7f1', label: 'Fresh' },
+  close:   { text: '#B89030', badgeBg: '#FBF5E6', label: 'Due soon' },
+  due:     { text: '#C06535', badgeBg: '#FAEEE5', label: 'Due today' },
+  overdue: { text: '#B54545', badgeBg: '#FBEAEA', label: 'Overdue' },
+  never:   { text: '#999999', badgeBg: '#F3F3F3', label: 'Never watered' },
 };
 
 // ============================================================
@@ -1312,6 +1335,21 @@ function getStatusText(status) {
   return STATUS_COLORS[status]?.label || 'Never watered';
 }
 
+function formatShortDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function getNextWaterDate(plant, lower) {
+  if (!plant.lastWatered) return '—';
+  const lastDate = plant.lastWatered.toDate ? plant.lastWatered.toDate() : new Date(plant.lastWatered);
+  const nextDate = new Date(lastDate.getTime() + lower * 86400000);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  nextDate.setHours(0, 0, 0, 0);
+  if (nextDate <= today) return 'Now';
+  return formatShortDate(nextDate);
+}
+
 // ============================================================
 // Error Banner
 // ============================================================
@@ -1363,72 +1401,96 @@ function renderPlantRow(plant) {
   const emoji = getEmoji(plant.name);
   const isCustom = plant.customInterval != null;
   const isExpanded = expandedPlantId === plant.id;
+  const plantData = findPlantData(plant.name);
 
-  const statusLabel = colors.label;
-
-  // Helper text for second line of the row
-  let helperText;
+  // Status text under plant name
+  let statusText;
   if (days === null) {
-    helperText = 'Add your first watering';
+    statusText = 'Never watered';
   } else if (days === 0) {
-    helperText = 'Watered today';
+    statusText = 'Watered today';
   } else if (days === 1) {
-    helperText = 'Watered 1 day ago';
+    statusText = 'Watered 1 day ago';
   } else {
-    helperText = `Watered ${days} days ago`;
+    statusText = `Watered ${days} days ago`;
   }
 
-  let recommendationHtml;
+  // Last watered tile
+  let lastWateredText = 'Never';
+  let lastWateredGreen = false;
+  if (days === 0) { lastWateredText = 'Today'; lastWateredGreen = true; }
+  else if (days === 1) { lastWateredText = 'Yesterday'; lastWateredGreen = true; }
+  else if (days !== null) { lastWateredText = `${days} days ago`; }
+
+  const freqText = isCustom ? `Every ${plant.customInterval}d` : `Every ${lower}d`;
+  const nextWaterText = getNextWaterDate(plant, lower);
+  const lightText = plantData && plantData.light ? plantData.light : 'Medium';
+  const tipText = plantData && plantData.tip ? plantData.tip : 'Water when the top inch of soil feels dry.';
+
+  // Interval editor / recommendation row
+  let recHtml;
   if (isCustom) {
-    recommendationHtml = `
-      <div class="recommendation" id="rec-${plant.id}">
+    recHtml = `
+      <div class="expand-rec" id="rec-${plant.id}">
         <span>Custom: every ${plant.customInterval} day${plant.customInterval !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
-        <button class="reset-link" onclick="event.stopPropagation(); resetInterval('${plant.id}')">Reset to default</button>
+        <button class="expand-edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">✏️</button>
+        <button class="reset-link" onclick="event.stopPropagation(); resetInterval('${plant.id}')">Reset</button>
       </div>
     `;
   } else {
-    recommendationHtml = `
-      <div class="recommendation" id="rec-${plant.id}">
-        <span>Water again in ~${lower} day${lower !== 1 ? 's' : ''}</span>
-        <button class="edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Edit interval">&#9998;</button>
+    recHtml = `
+      <div class="expand-rec" id="rec-${plant.id}">
+        <button class="expand-edit-btn" onclick="event.stopPropagation(); openIntervalEditor('${plant.id}')" title="Customize interval">✏️ Customize interval</button>
       </div>
     `;
   }
-
-  const envLabel = plant.environment === 'indoor' ? '\ud83c\udfe0 Indoor' : '\u2600\ufe0f Outdoor';
 
   return `
-    <div class="plant-row" id="row-${plant.id}">
-      <div class="plant-row-summary" style="border-left-color:${colors.border};" onclick="toggleExpand('${plant.id}')">
-        <span class="plant-row-emoji">${emoji}</span>
-        <div class="plant-row-info">
-          <div class="plant-row-name-line">
-            <span class="plant-row-name">${escapeHtml(plant.name)}</span>
-            <span class="status-badge" style="background:${colors.badgeBg}; color:${colors.text};">${statusLabel}</span>
-          </div>
-          <span class="plant-row-sub" style="color:${colors.text};">${helperText}</span>
+    <div class="plant-card${isExpanded ? ' open' : ''}" id="row-${plant.id}">
+      <div class="card-row" onclick="toggleExpand('${plant.id}')">
+        <div class="plant-icon">${emoji}</div>
+        <div class="plant-info">
+          <div class="plant-name">${escapeHtml(plant.name)} <span class="badge" style="background:${colors.badgeBg}; color:${colors.text};">${colors.label}</span></div>
+          <div class="plant-status" style="color:${colors.text};">${statusText}</div>
         </div>
-        <button class="plant-row-water" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water plant" aria-label="Water ${escapeHtml(plant.name)}">💧</button>
+        <button class="water-circle" onclick="event.stopPropagation(); waterPlant('${plant.id}')" title="Water plant" aria-label="Water ${escapeHtml(plant.name)}">💧</button>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
       </div>
-      <div class="plant-detail${isExpanded ? ' expanded' : ''}" id="detail-${plant.id}">
-        <div class="detail-row">
-          <span>${envLabel}</span>
-        </div>
-        <div class="detail-row">
-          ${recommendationHtml}
-        </div>
-        <div class="detail-row">
-          <div class="interval-editor" id="editor-${plant.id}">
-            <span>Every</span>
-            <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}" onclick="event.stopPropagation()">
-            <span>days</span>
-            <button class="save-btn" onclick="event.stopPropagation(); saveInterval('${plant.id}')">Save</button>
-            <button class="cancel-btn" onclick="event.stopPropagation(); closeIntervalEditor('${plant.id}')">Cancel</button>
+      <div class="expand-panel" id="detail-${plant.id}">
+        <div class="expand-inner">
+          <div class="expand-title">Care details</div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <div class="detail-label">Last watered</div>
+              <div class="detail-value${lastWateredGreen ? ' green' : ''}">${lastWateredText}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Frequency</div>
+              <div class="detail-value">${freqText}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Light</div>
+              <div class="detail-value">${lightText}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Next water</div>
+              <div class="detail-value">${nextWaterText}</div>
+            </div>
           </div>
-        </div>
-        <div class="detail-actions">
-          <button class="plant-delete" onclick="event.stopPropagation(); confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">&#128465; Remove</button>
+          <div class="care-note"><strong>Tip:</strong> ${tipText}</div>
+          <div class="expand-actions">
+            ${recHtml}
+            <div class="interval-editor" id="editor-${plant.id}">
+              <span>Every</span>
+              <input type="number" min="1" max="365" id="input-${plant.id}" value="${isCustom ? plant.customInterval : lower}" onclick="event.stopPropagation()">
+              <span>days</span>
+              <button class="save-btn" onclick="event.stopPropagation(); saveInterval('${plant.id}')">Save</button>
+              <button class="cancel-btn" onclick="event.stopPropagation(); closeIntervalEditor('${plant.id}')">Cancel</button>
+            </div>
+            <button class="plant-delete" onclick="event.stopPropagation(); confirmDelete('${plant.id}', '${escapeHtml(plant.name)}')" title="Remove plant">🗑 Remove</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1447,7 +1509,7 @@ function render() {
   }
   app.innerHTML = `
     <div class="plant-list">
-      <button class="water-all-btn" onclick="confirmWaterAll()">💦 Water All</button>
+      <button class="water-all-btn" onclick="confirmWaterAll()">💧 Water All</button>
       ${plants.map(renderPlantRow).join('')}
       <button class="add-plant-btn" onclick="openAddModal()">+ Add a Plant</button>
       <div style="text-align:center; margin-top:24px;">
@@ -1463,14 +1525,14 @@ function toggleExpand(plantId) {
   } else {
     // Collapse previous
     if (expandedPlantId) {
-      const prevDetail = document.getElementById('detail-' + expandedPlantId);
-      if (prevDetail) prevDetail.classList.remove('expanded');
+      const prevCard = document.getElementById('row-' + expandedPlantId);
+      if (prevCard) prevCard.classList.remove('open');
     }
     expandedPlantId = plantId;
   }
-  const detail = document.getElementById('detail-' + plantId);
-  if (detail) {
-    detail.classList.toggle('expanded', expandedPlantId === plantId);
+  const card = document.getElementById('row-' + plantId);
+  if (card) {
+    card.classList.toggle('open', expandedPlantId === plantId);
   }
 }
 
